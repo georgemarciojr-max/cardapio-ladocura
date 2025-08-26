@@ -1,4 +1,4 @@
-// VERSÃO FINAL - Estrutura do corpo da requisição corrigida conforme a documentação
+// VERSÃO FINAL - Usando "driverCategory: 0" (número) como descoberto no exemplo do dev
 
 exports.handler = async function(event) {
     if (event.httpMethod !== 'POST') {
@@ -15,7 +15,7 @@ exports.handler = async function(event) {
     }
 
     try {
-        // --- ETAPA 1: OBTER O BEARER TOKEN (Já está funcionando) ---
+        // --- ETAPA 1: OBTER O BEARER TOKEN (Funcionando) ---
         
         const tokenResponse = await fetch('https://api.dev.jumaentregas.com.br/auth/token', {
             method: 'POST',
@@ -32,8 +32,8 @@ exports.handler = async function(event) {
 
         // --- ETAPA 2: CALCULAR O FRETE USANDO O TOKEN ---
 
-        // --- CORREÇÃO IMPORTANTE AQUI ---
-        // Adicionamos os campos "driverCategory" e "paymentType" que estavam faltando.
+        // --- A ÚLTIMA CORREÇÃO ESTÁ AQUI ---
+        // Alteramos "driverCategory" de "MOTO" para o número 0.
         const requestBody = {
             "origin": {
                 "address": "Rua Francisco Said, 800 - Jardim Santana, Porto Velho - RO, 76828-325"
@@ -41,8 +41,8 @@ exports.handler = async function(event) {
             "destination": {
                 "address": `${street}, ${number} - ${neighborhood}, Porto Velho - RO, ${cep}`
             },
-            "driverCategory": "MOTO", // Valor padrão, parece ser o mais comum.
-            "paymentType": "ON_DELIVERY"  // Valor padrão para pagamento na entrega.
+            "driverCategory": 0, // USANDO O NÚMERO 0
+            "paymentType": "ON_DELIVERY"
         };
         
         const freteResponse = await fetch('https://api.dev.jumaentregas.com.br/destinations', {
@@ -57,7 +57,6 @@ exports.handler = async function(event) {
         const freteData = await freteResponse.json();
 
         if (!freteResponse.ok) {
-            // Se ainda der erro, agora a mensagem será mais específica.
             const errorMessage = freteData.message || 'Erro da API Juma.';
             throw new Error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
         }
