@@ -1,11 +1,9 @@
-// VERSÃO FINAL - Usando "driverCategory: 0" (número) como descoberto no exemplo do dev
-
 exports.handler = async function(event) {
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Method Not Allowed' };
     }
 
-    const { street, number, neighborhood, cep } = JSON.parse(event.body);
+    const { category, street, number, neighborhood, cep } = JSON.parse(event.body);
 
     const clientId = process.env.JUMA_CLIENT_ID;
     const clientSecret = process.env.JUMA_SECRET;
@@ -15,33 +13,29 @@ exports.handler = async function(event) {
     }
 
     try {
-        // --- ETAPA 1: OBTER O BEARER TOKEN (Funcionando) ---
-        
         const tokenResponse = await fetch('https://api.dev.jumaentregas.com.br/auth/token', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                "clientid": clientId,
-                "secret": clientSecret
-            })
+            body: JSON.stringify({ "clientid": clientId, "secret": clientSecret })
         });
-
         const tokenData = await tokenResponse.json();
-        if (!tokenResponse.ok) throw new Error('Falha na autenticação com a Juma. Verifique as credenciais.');
+        if (!tokenResponse.ok) throw new Error('Falha na autenticação com a Juma.');
         const accessToken = tokenData.token;
 
-        // --- ETAPA 2: CALCULAR O FRETE USANDO O TOKEN ---
-
-        // --- A ÚLTIMA CORREÇÃO ESTÁ AQUI ---
-        // Alteramos "driverCategory" de "MOTO" para o número 0.
+        // --- AQUI ESTÁ A MUDANÇA FINAL ---
+        // Adicionamos latitude e longitude com valor 0, como o desenvolvedor instruiu
         const requestBody = {
             "origin": {
-                "address": "Rua Francisco Said, 800 - Jardim Santana, Porto Velho - RO, 76828-325"
+                "address": "Rua José Faid, 800 - Jardim Santana, Porto Velho - RO, 76828-325",
+                "latitude": 0,
+                "longitude": 0
             },
             "destination": {
-                "address": `${street}, ${number} - ${neighborhood}, Porto Velho - RO, ${cep}`
+                "address": `${street}, ${number} - ${neighborhood}, Porto Velho - RO, ${cep}`,
+                "latitude": 0,
+                "longitude": 0
             },
-            "driverCategory": 0, // USANDO O NÚMERO 0
+            "driverCategory": parseInt(category, 10),
             "paymentType": "ON_DELIVERY"
         };
         
@@ -61,12 +55,10 @@ exports.handler = async function(event) {
             throw new Error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
         }
         
-        // SUCESSO!
         return {
             statusCode: 200,
             body: JSON.stringify(freteData)
         };
-
     } catch (error) {
         return {
             statusCode: 500,
