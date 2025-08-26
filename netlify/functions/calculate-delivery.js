@@ -1,3 +1,5 @@
+// VERSÃO FINAL - Corrigindo o valor de "paymentType" para "DINHEIRO"
+
 exports.handler = async function(event) {
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Method Not Allowed' };
@@ -22,8 +24,7 @@ exports.handler = async function(event) {
         if (!tokenResponse.ok) throw new Error('Falha na autenticação com a Juma.');
         const accessToken = tokenData.token;
 
-        // --- AQUI ESTÁ A MUDANÇA FINAL ---
-        // Adicionamos latitude e longitude com valor 0, como o desenvolvedor instruiu
+        // --- A MUDANÇA FINAL ESTÁ AQUI ---
         const requestBody = {
             "origin": {
                 "address": "Rua José Faid, 800 - Jardim Santana, Porto Velho - RO, 76828-325",
@@ -36,7 +37,7 @@ exports.handler = async function(event) {
                 "longitude": 0
             },
             "driverCategory": parseInt(category, 10),
-            "paymentType": "ON_DELIVERY"
+            "paymentType": "DINHEIRO" // Trocamos "ON_DELIVERY" por "DINHEIRO"
         };
         
         const freteResponse = await fetch('https://api.dev.jumaentregas.com.br/destinations', {
