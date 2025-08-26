@@ -1,13 +1,22 @@
 // netlify/functions/calculate-delivery.js
 
-// Importa a ferramenta para fazer a chamada para a Juma
-const fetch = require('node-fetch');
+// Versão final e simplificada, usando o fetch nativo.
 
 exports.handler = async function(event, context) {
+    // Verifica se o corpo da requisição existe
+    if (!event.body) {
+        return { statusCode: 400, body: JSON.stringify({ error: "Requisição sem dados." }) };
+    }
+
     const { street, number, neighborhood, cep } = JSON.parse(event.body);
 
     const clientId = process.env.JUMA_CLIENT_ID;
     const clientSecret = process.env.JUMA_SECRET;
+
+    // Validação básica dos dados recebidos
+    if (!clientId || !clientSecret) {
+        return { statusCode: 500, body: JSON.stringify({ error: "Credenciais do servidor não configuradas." }) };
+    }
 
     const requestBody = {
         "points": [
@@ -21,7 +30,6 @@ exports.handler = async function(event, context) {
     };
 
     try {
-        // <<< CORREÇÃO FINAL: Voltando para o endereço ".dev" da API.
         const response = await fetch('https://api.dev.jumaentregas.com.br/v2/deliveries/price', {
             method: 'POST',
             headers: {
@@ -32,16 +40,24 @@ exports.handler = async function(event, context) {
             body: JSON.stringify(requestBody)
         });
 
+        const responseBody = await response.text(); // Lê a resposta como texto para depuração
+
         if (!response.ok) {
-            const errorData = await response.json();
+            // Tenta interpretar a resposta de erro como JSON, se falhar, mostra como texto
+            let errorData;
+            try {
+                errorData = JSON.parse(responseBody);
+            } catch (e) {
+                errorData = { message: responseBody };
+            }
             console.error('Erro da API Juma:', errorData);
             return {
                 statusCode: response.status,
-                body: JSON.stringify({ error: `Erro da API Juma: ${errorData.message || 'Tente novamente.'}` })
+                body: JSON.stringify({ error: `Erro da API Juma: ${errorData.message || 'Resposta inválida.'}` })
             };
         }
 
-        const data = await response.json();
+        const data = JSON.parse(responseBody);
 
         return {
             statusCode: 200,
