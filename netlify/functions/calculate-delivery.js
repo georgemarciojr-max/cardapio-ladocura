@@ -1,5 +1,8 @@
 // netlify/functions/calculate-delivery.js
 
+// Importa a ferramenta para fazer a chamada para a Juma
+const fetch = require('node-fetch');
+
 exports.handler = async function(event, context) {
     const { street, number, neighborhood, cep } = JSON.parse(event.body);
 
@@ -9,8 +12,6 @@ exports.handler = async function(event, context) {
     const requestBody = {
         "points": [
             {
-                // <<< IMPORTANTE: VERIFIQUE SE ESTE É SEU ENDEREÇO DE COLETA EXATO!
-                // Se não for, altere aqui antes de salvar.
                 "address": "Rua Francisco Said, 800 - Jardim Santana, Porto Velho - RO, 76828-634" 
             },
             {
@@ -20,8 +21,8 @@ exports.handler = async function(event, context) {
     };
 
     try {
-        // <<< CORREÇÃO: Removido o ".dev" do endereço da API
-        const response = await fetch('https://api.jumaentregas.com.br/v2/deliveries/price', {
+        // <<< CORREÇÃO FINAL: Voltando para o endereço ".dev" da API.
+        const response = await fetch('https://api.dev.jumaentregas.com.br/v2/deliveries/price', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -36,7 +37,7 @@ exports.handler = async function(event, context) {
             console.error('Erro da API Juma:', errorData);
             return {
                 statusCode: response.status,
-                body: JSON.stringify({ error: `Erro ao calcular frete: ${errorData.message || 'Tente novamente.'}` })
+                body: JSON.stringify({ error: `Erro da API Juma: ${errorData.message || 'Tente novamente.'}` })
             };
         }
 
@@ -51,7 +52,7 @@ exports.handler = async function(event, context) {
         console.error('Erro inesperado:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: 'Não foi possível calcular o frete no momento. Tente novamente.' })
+            body: JSON.stringify({ error: 'Não foi possível conectar ao servidor de frete. Tente novamente.' })
         };
     }
 };
