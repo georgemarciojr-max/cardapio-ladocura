@@ -1,4 +1,4 @@
-// VERSÃO FINAL CORRIGIDA (AGORA DE VERDADE) - Autenticação com "clientid" minúsculo
+// VERSÃO FINAL - Estrutura do corpo da requisição corrigida conforme a documentação
 
 exports.handler = async function(event) {
     if (event.httpMethod !== 'POST') {
@@ -15,37 +15,34 @@ exports.handler = async function(event) {
     }
 
     try {
-        // --- ETAPA 1: OBTER O BEARER TOKEN ---
+        // --- ETAPA 1: OBTER O BEARER TOKEN (Já está funcionando) ---
         
         const tokenResponse = await fetch('https://api.dev.jumaentregas.com.br/auth/token', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                // --- A CORREÇÃO FINAL ESTÁ AQUI ---
-                // Alterado de "clientId" para "clientid" (tudo minúsculo)
                 "clientid": clientId,
                 "secret": clientSecret
             })
         });
 
         const tokenData = await tokenResponse.json();
-
-        if (!tokenResponse.ok) {
-            console.error("Erro ao obter o token:", tokenData);
-            throw new Error('Falha na autenticação com a Juma. Verifique as credenciais.');
-        }
-
+        if (!tokenResponse.ok) throw new Error('Falha na autenticação com a Juma. Verifique as credenciais.');
         const accessToken = tokenData.token;
 
         // --- ETAPA 2: CALCULAR O FRETE USANDO O TOKEN ---
 
+        // --- CORREÇÃO IMPORTANTE AQUI ---
+        // Adicionamos os campos "driverCategory" e "paymentType" que estavam faltando.
         const requestBody = {
             "origin": {
                 "address": "Rua Francisco Said, 800 - Jardim Santana, Porto Velho - RO, 76828-325"
             },
             "destination": {
                 "address": `${street}, ${number} - ${neighborhood}, Porto Velho - RO, ${cep}`
-            }
+            },
+            "driverCategory": "MOTO", // Valor padrão, parece ser o mais comum.
+            "paymentType": "ON_DELIVERY"  // Valor padrão para pagamento na entrega.
         };
         
         const freteResponse = await fetch('https://api.dev.jumaentregas.com.br/destinations', {
@@ -60,17 +57,18 @@ exports.handler = async function(event) {
         const freteData = await freteResponse.json();
 
         if (!freteResponse.ok) {
-            console.error("Erro da API Juma ao calcular o frete:", freteData);
-            throw new Error(freteData.message || 'Erro da API Juma ao calcular o frete.');
+            // Se ainda der erro, agora a mensagem será mais específica.
+            const errorMessage = freteData.message || 'Erro da API Juma.';
+            throw new Error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
         }
         
+        // SUCESSO!
         return {
             statusCode: 200,
             body: JSON.stringify(freteData)
         };
 
     } catch (error) {
-        console.error('Erro inesperado na função:', error);
         return {
             statusCode: 500,
             body: JSON.stringify({ error: error.message })
