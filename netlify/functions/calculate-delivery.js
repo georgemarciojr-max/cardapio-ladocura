@@ -1,13 +1,15 @@
-// Este é o código que roda no servidor da Netlify, de forma segura.
+// VERSÃO FINAL - Autenticação com Bearer Token
+// Este código primeiro busca um token de acesso e depois usa esse token para calcular o frete.
 
 exports.handler = async function(event) {
+    // 1. Validação inicial da requisição
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Method Not Allowed' };
     }
 
     const { street, number, neighborhood, cep } = JSON.parse(event.body);
 
-    // Pega as credenciais que vamos configurar na Netlify
+    // 2. Pega as credenciais permanentes do ambiente Netlify
     const clientId = process.env.JUMA_CLIENT_ID;
     const clientSecret = process.env.JUMA_SECRET;
 
@@ -15,48 +17,74 @@ exports.handler = async function(event) {
         return { statusCode: 500, body: JSON.stringify({ error: "Credenciais do servidor não configuradas." }) };
     }
 
-    // Monta o corpo da requisição para a Juma com os dados recebidos do index.html
-    const requestBody = {
-        "origin": {
-            "address": "Rua Francisco Said, 800 - Jardim Santana, Porto Velho - RO, 76828-325" // SEU ENDEREÇO DE PARTIDA FIXO
-        },
-        "destination": {
-            "address": `${street}, ${number} - ${neighborhood}, Porto Velho - RO, ${cep}`
-        }
-    };
-
     try {
-        // Faz a chamada para a API da Juma usando o endpoint correto
-        const response = await fetch('https://api.dev.jumaentregas.com.br/destinations', {
+        // --- ETAPA 1: OBTER O BEARER TOKEN ---
+        
+        console.log("Tentando obter o token de autenticação...");
+
+        const tokenResponse = await fetch('https://api.dev.jumaentregas.com.br/auth/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                "client_id": clientId,
+                "client_secret": clientSecret
+            })
+        });
+
+        const tokenData = await tokenResponse.json();
+
+        if (!tokenResponse.ok) {
+            console.error("Erro ao obter o token:", tokenData);
+            throw new Error('Falha na autenticação com a Juma. Verifique as credenciais.');
+        }
+
+        const accessToken = tokenData.access_token; // Extrai o token da resposta
+        console.log("Token obtido com sucesso!");
+
+        // --- ETAPA 2: CALCULAR O FRETE USANDO O TOKEN ---
+
+        const requestBody = {
+            "origin": {
+                "address": "Rua Francisco Said, 800 - Jardim Santana, Porto Velho - RO, 76828-325"
+            },
+            "destination": {
+                "address": `${street}, ${number} - ${neighborhood}, Porto Velho - RO, ${cep}`
+            }
+        };
+        
+        console.log("Calculando o frete para o destino...");
+
+        const freteResponse = await fetch('https://api.dev.jumaentregas.com.br/destinations', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'client_id': clientId,
-                'secret': clientSecret
+                // Usa o Bearer Token obtido na Etapa 1
+                'Authorization': `Bearer ${accessToken}`
             },
             body: JSON.stringify(requestBody)
         });
 
-        const data = await response.json();
+        const freteData = await freteResponse.json();
 
-        // Se a Juma retornar um erro (como "Unauthorized"), nós o repassamos para o index.html
-        if (!response.ok) {
-            return {
-                statusCode: response.status,
-                body: JSON.stringify({ error: data.message || 'Erro da API Juma.' })
-            };
+        if (!freteResponse.ok) {
+            console.error("Erro da API Juma ao calcular o frete:", freteData);
+            throw new Error(freteData.message || 'Erro da API Juma ao calcular o frete.');
         }
 
-        // Se tudo deu certo, retorna a resposta da Juma para o index.html
+        console.log("Cálculo de frete bem-sucedido!");
+        
+        // Retorna a resposta final para o seu site
         return {
             statusCode: 200,
-            body: JSON.stringify(data)
+            body: JSON.stringify(freteData)
         };
 
     } catch (error) {
+        // Captura qualquer erro que acontecer no processo
+        console.error('Erro inesperado na função:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: 'Não foi possível conectar ao servidor de frete.' })
+            body: JSON.stringify({ error: error.message })
         };
     }
 };
