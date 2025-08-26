@@ -6,7 +6,7 @@
     <title>Calcular Frete</title>
     <style>
         body { font-family: sans-serif; max-width: 500px; margin: 2rem auto; padding: 1rem; }
-        input { width: 95%; padding: 8px; margin-bottom: 10px; }
+        input, select { width: 98%; padding: 8px; margin-bottom: 10px; }
         button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; cursor: pointer; }
         #resultado { margin-top: 20px; font-weight: bold; }
     </style>
@@ -14,6 +14,13 @@
 <body>
     <h1>Calcular Frete</h1>
     <form id="frete-form">
+        <label for="category">Escolha o tipo de entrega:</label>
+        <select id="category" required>
+            <option value="0">Motoboy Padrão</option>
+            <option value="1">Motoboy Premium</option>
+            <option value="2">Motoboy com Retorno</option>
+        </select>
+        
         <label for="cep">CEP:</label>
         <input type="text" id="cep" required>
 
@@ -36,11 +43,11 @@
         const resultadoDiv = document.getElementById('resultado');
 
         form.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Impede o recarregamento da página
-            
+            event.preventDefault();
             resultadoDiv.textContent = 'Calculando...';
 
-            const dadosEndereco = {
+            const dadosCalculo = {
+                category: document.getElementById('category').value,
                 cep: document.getElementById('cep').value,
                 street: document.getElementById('street').value,
                 number: document.getElementById('number').value,
@@ -48,22 +55,19 @@
             };
 
             try {
-                // Esta URL chama a nossa função Netlify, e não a API da Juma diretamente
                 const response = await fetch('/.netlify/functions/calculate-delivery', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dadosEndereco)
+                    body: JSON.stringify(dadosCalculo)
                 });
 
                 const data = await response.json();
 
                 if (!response.ok) {
-                    // Se a nossa função retornar um erro (ex: Unauthorized), mostramos aqui
                     throw new Error(data.error || 'Ocorreu um erro desconhecido.');
                 }
                 
-                // Exibe o preço formatado
-                const preco = data.price / 100; // A API geralmente retorna em centavos
+                const preco = data.price / 100;
                 resultadoDiv.style.color = 'green';
                 resultadoDiv.textContent = `Valor do frete: R$ ${preco.toFixed(2).replace('.', ',')}`;
 
