@@ -22,7 +22,7 @@ exports.handler = async function(event, context) {
         "points": [
             {
                 // <<< CORREÇÃO: CEP de coleta atualizado.
-                "address": "Rua Francisco Said, 800 - Jardim Santana, Porto Velho - RO, 76828-325" 
+                "address": "Rua José Faid, 800 - Jardim Santana, Porto Velho - RO, 76828-325" 
             },
             {
                 "address": `${street}, ${number} - ${neighborhood}, Porto Velho - RO, ${cep}` 
