@@ -1,15 +1,12 @@
-// VERSÃO FINAL - Autenticação com Bearer Token
-// Este código primeiro busca um token de acesso e depois usa esse token para calcular o frete.
+// VERSÃO FINAL CORRIGIDA - Autenticação com Bearer Token e chaves em camelCase
 
 exports.handler = async function(event) {
-    // 1. Validação inicial da requisição
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Method Not Allowed' };
     }
 
     const { street, number, neighborhood, cep } = JSON.parse(event.body);
 
-    // 2. Pega as credenciais permanentes do ambiente Netlify
     const clientId = process.env.JUMA_CLIENT_ID;
     const clientSecret = process.env.JUMA_SECRET;
 
@@ -20,14 +17,14 @@ exports.handler = async function(event) {
     try {
         // --- ETAPA 1: OBTER O BEARER TOKEN ---
         
-        console.log("Tentando obter o token de autenticação...");
-
         const tokenResponse = await fetch('https://api.dev.jumaentregas.com.br/auth/token', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                "client_id": clientId,
-                "client_secret": clientSecret
+                // --- CORREÇÃO CRÍTICA AQUI ---
+                // Alterado de "client_id" para "clientId" e "client_secret" para "secret"
+                "clientId": clientId,
+                "secret": clientSecret
             })
         });
 
@@ -38,8 +35,7 @@ exports.handler = async function(event) {
             throw new Error('Falha na autenticação com a Juma. Verifique as credenciais.');
         }
 
-        const accessToken = tokenData.access_token; // Extrai o token da resposta
-        console.log("Token obtido com sucesso!");
+        const accessToken = tokenData.token; // Corrigido para "token" com base na foto
 
         // --- ETAPA 2: CALCULAR O FRETE USANDO O TOKEN ---
 
@@ -52,13 +48,10 @@ exports.handler = async function(event) {
             }
         };
         
-        console.log("Calculando o frete para o destino...");
-
         const freteResponse = await fetch('https://api.dev.jumaentregas.com.br/destinations', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // Usa o Bearer Token obtido na Etapa 1
                 'Authorization': `Bearer ${accessToken}`
             },
             body: JSON.stringify(requestBody)
@@ -70,17 +63,13 @@ exports.handler = async function(event) {
             console.error("Erro da API Juma ao calcular o frete:", freteData);
             throw new Error(freteData.message || 'Erro da API Juma ao calcular o frete.');
         }
-
-        console.log("Cálculo de frete bem-sucedido!");
         
-        // Retorna a resposta final para o seu site
         return {
             statusCode: 200,
             body: JSON.stringify(freteData)
         };
 
     } catch (error) {
-        // Captura qualquer erro que acontecer no processo
         console.error('Erro inesperado na função:', error);
         return {
             statusCode: 500,
