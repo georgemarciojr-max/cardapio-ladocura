@@ -1,4 +1,4 @@
-// VERSÃO FINAL CORRIGIDA - Autenticação com Bearer Token e chaves em camelCase
+// VERSÃO FINAL CORRIGIDA (AGORA DE VERDADE) - Autenticação com "clientid" minúsculo
 
 exports.handler = async function(event) {
     if (event.httpMethod !== 'POST') {
@@ -21,9 +21,9 @@ exports.handler = async function(event) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                // --- CORREÇÃO CRÍTICA AQUI ---
-                // Alterado de "client_id" para "clientId" e "client_secret" para "secret"
-                "clientId": clientId,
+                // --- A CORREÇÃO FINAL ESTÁ AQUI ---
+                // Alterado de "clientId" para "clientid" (tudo minúsculo)
+                "clientid": clientId,
                 "secret": clientSecret
             })
         });
@@ -35,7 +35,7 @@ exports.handler = async function(event) {
             throw new Error('Falha na autenticação com a Juma. Verifique as credenciais.');
         }
 
-        const accessToken = tokenData.token; // Corrigido para "token" com base na foto
+        const accessToken = tokenData.token;
 
         // --- ETAPA 2: CALCULAR O FRETE USANDO O TOKEN ---
 
