@@ -323,7 +323,21 @@ select:focus, input[type="date"]:focus, input[type="time"]:focus { outline: none
     <div id="cartItems"></div>
 
     <div class="cart-summary">
-      <div class="total" id="cartTotal">🧾 Subtotal: R$ 0,00</div>
+      <div id="totals-section">
+        <div class="total-line">
+            <span>Subtotal:</span>
+            <span id="subtotalValue">R$ 0,00</span>
+        </div>
+        <div class="total-line" id="delivery-fee-line" style="display: none;">
+            <span>Taxa de Entrega:</span>
+            <span id="deliveryFeeValue">A calcular</span>
+        </div>
+        <div class="total-line grand-total">
+            <span>Total Geral:</span>
+            <span id="grandTotalValue">R$ 0,00</span>
+        </div>
+      </div>
+
       <div class="block-sep"></div>
 
       <h3>🚚 Entrega ou Retirada</h3>
@@ -373,6 +387,10 @@ select:focus, input[type="date"]:focus, input[type="time"]:focus { outline: none
               <label class="f-label" for="ref"><span class="ficon">📌</span><span>Referência (opcional)</span></label>
               <input type="text" id="ref" class="form-input" placeholder="Ex.: Apto, bloco, próximo à...">
           </div>
+          <button type="button" class="btn" id="calculateFeeBtn" style="width:100%; margin-top: 16px;">
+            <svg style="width:20px; height:20px" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
+            <span>Calcular Frete</span>
+          </button>
         </div>
       </div>
 
@@ -398,6 +416,9 @@ select:focus, input[type="date"]:focus, input[type="time"]:focus { outline: none
         <label class="f-label" for="obs"><span class="ficon">✍️</span><span>Observações (opcional)</span></label>
         <textarea id="obs" class="form-input" rows="2" placeholder="Ex.: Aniversário, preferências..."></textarea>
       </div>
+      
+      <!-- BOTÃO DE TESTE DE DIAGNÓSTICO -->
+      <button id="testFunctionBtn" class="btn btn-outline" style="width:100%; margin-top:16px;">Testar Conexão</button>
     </div>
   </div>
 
@@ -551,9 +572,13 @@ document.querySelectorAll('article.card[data-key]').forEach(article=>{
   };
 });
 let cart=[]; let additions=0;
+let deliveryFee = 0;
 const CART_KEY='ladocura_cart_v18';
 const cartItemsEl=document.getElementById('cartItems');
-const cartTotalEl=document.getElementById('cartTotal');
+const subtotalValueEl = document.getElementById('subtotalValue');
+const deliveryFeeLineEl = document.getElementById('delivery-fee-line');
+const deliveryFeeValueEl = document.getElementById('deliveryFeeValue');
+const grandTotalValueEl = document.getElementById('grandTotalValue');
 const cartCountEl=document.getElementById('cartCount');
 const mobileSubtotal=document.getElementById('mobileSubtotal');
 const cartBadgeEl = document.querySelector('#openCart .cart-badge');
@@ -617,10 +642,13 @@ function render(){
       persist(); render();
     };
   });
-  const subtotal=sum();
-  cartTotalEl.textContent=`🧾 Subtotal: ${moneyBR(subtotal)}`;
-  mobileSubtotal.textContent=`Subtotal: ${moneyBR(subtotal)}`;
-  cartCountEl.textContent=String(cart.reduce((s,i)=>s+i.count,0));
+  
+  const subtotal = sum();
+  const grandTotal = subtotal + deliveryFee;
+  subtotalValueEl.textContent = moneyBR(subtotal);
+  grandTotalValueEl.textContent = moneyBR(grandTotal);
+  mobileSubtotal.textContent = `Total: ${moneyBR(grandTotal)}`;
+  cartCountEl.textContent = String(cart.reduce((s, i) => s + i.count, 0));
 }
 const drawer=document.getElementById('drawer');
 function openDrawer(){drawer.classList.add('open');}
@@ -638,6 +666,12 @@ modeBtns.forEach(b=>b.onclick=()=>{
   modeBoxes.forEach(box => {
     box.classList.toggle('visible', box.dataset.modeBox === mode);
   });
+  deliveryFeeLineEl.style.display = mode === 'entrega' ? 'flex' : 'none';
+  if (mode === 'retirada') {
+      deliveryFee = 0;
+      deliveryFeeValueEl.textContent = 'A calcular';
+  }
+  render();
 });
 
 const dateInput = document.getElementById('date');
@@ -647,7 +681,7 @@ dateInput.min = toLocalInputValue(minDate);
 dateInput.value = dateInput.min;
 timeInput.value = `${pad2(minDate.getHours())}:${pad2(minDate.getMinutes())}`;
 
-const cepInput=document.getElementById('cep'); const ruaInput=document.getElementById('rua'); const bairroInput=document.getElementById('bairro');
+const cepInput=document.getElementById('cep'); const ruaInput=document.getElementById('rua'); const bairroInput=document.getElementById('bairro'); const numeroInput = document.getElementById('numero');
 const cepSpinner = document.getElementById('cepSpinner');
 
 if(cepInput){
@@ -665,6 +699,64 @@ if(cepInput){
   cepInput.addEventListener('change',lookup);
   cepInput.addEventListener('keyup',()=>{if(onlyDigits(cepInput.value).length===8) lookup();});
 }
+
+// Lógica de diagnóstico
+document.getElementById('testFunctionBtn').onclick = async () => {
+    try {
+        const response = await fetch('/api/hello');
+        const data = await response.json();
+        showModal(`Sucesso! Resposta do servidor: "${data.message}"`, '✅');
+    } catch (error) {
+        showModal(`Erro no teste: ${error.message}`, '❌');
+    }
+};
+
+document.getElementById('calculateFeeBtn').onclick = async () => {
+    const street = ruaInput.value.trim();
+    const number = numeroInput.value.trim();
+    const neighborhood = bairroInput.value.trim();
+    const cep = cepInput.value.trim();
+
+    if (!street || !number || !neighborhood) {
+        showModal('Por favor, preencha Rua, Número e Bairro para calcular o frete.');
+        return;
+    }
+
+    const btn = document.getElementById('calculateFeeBtn');
+    btn.disabled = true;
+    btn.textContent = 'Calculando...';
+
+    try {
+        const response = await fetch('/api/calculate-delivery', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ street, number, neighborhood, cep })
+        });
+
+        // MUDANÇA PARA DIAGNÓSTICO
+        if (!response.ok) {
+            const errorText = await response.text(); // Pega a resposta como texto
+            throw new Error(`Erro ${response.status}: ${errorText}`);
+        }
+
+        const data = await response.json();
+
+        deliveryFee = data.price;
+        deliveryFeeValueEl.textContent = moneyBR(deliveryFee);
+        render();
+        showModal(`Taxa de entrega calculada: ${moneyBR(deliveryFee)}`, '🚚');
+
+    } catch (error) {
+        // Mostra o erro completo
+        showModal(`Não foi possível calcular o frete: ${error.message}`);
+        deliveryFee = 0;
+        deliveryFeeValueEl.textContent = 'Erro';
+        render();
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg style="width:20px; height:20px" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg><span>Calcular Frete</span>`;
+    }
+};
 
 function validateField(el, message) {
   const value = (el.value || '').trim();
@@ -700,11 +792,15 @@ document.getElementById('checkoutBtn').onclick=()=>{
   }else{
     nome = validateField(document.getElementById('nomeEntrega'), 'Por gentileza, informe o nome para entrega 🌸');
     if (!nome) return;
-    const rua = validateField(document.getElementById('rua'), 'O campo <strong>Rua</strong> é obrigatório para entrega.'); if (!rua) return;
-    const bairro = validateField(document.getElementById('bairro'), 'O campo <strong>Bairro</strong> é obrigatório para entrega.'); if (!bairro) return;
-    const numero = validateField(document.getElementById('numero'), 'O campo <strong>Número</strong> é obrigatório para entrega.'); if (!numero) return;
+    if (deliveryFee <= 0) {
+        showModal('Por favor, calcule a taxa de entrega antes de finalizar o pedido.');
+        return;
+    }
   }
   const lines=[];
+  const subtotal = sum();
+  const grandTotal = subtotal + deliveryFee;
+
   lines.push('🥰 Oiii, que alegria ver seu pedido concluído!');
   lines.push('Vou confirmar aqui com você o que escolheu, pode conferir junto comigo? 👇','');
   lines.push(`🌸 *Pedido para:* ${nome}`,'',`*Itens:*`);
@@ -713,7 +809,11 @@ document.getElementById('checkoutBtn').onclick=()=>{
     const tema=it.tema?` • Tema: ${it.tema}`:"";
     lines.push(`*${i+1})* ${it.title} • Sabor: ${it.flavor} • Pacote: ${it.pack} un • Qtd: ${it.count} • Total: ${moneyBR(tot)}${tema}`,'');
   });
-  lines.push(`📌 *Subtotal:* ${moneyBR(sum())}`);
+  lines.push(`📌 *Subtotal:* ${moneyBR(subtotal)}`);
+  if(mode === 'entrega'){
+    lines.push(`🛵 *Taxa de Entrega:* ${moneyBR(deliveryFee)}`);
+    lines.push(`💰 *Total Geral:* ${moneyBR(grandTotal)}`);
+  }
   lines.push(`📅 *Data/Horário:* ${formatBR(chosenDateTime)} às ${timeValue}`);
   if(mode==='retirada'){
     lines.push(`🚶‍♀️ *Modalidade:* Retirada no local`);
@@ -725,7 +825,7 @@ document.getElementById('checkoutBtn').onclick=()=>{
     const numero=(document.getElementById('numero').value||'').trim();
     const cep=(document.getElementById('cep').value||'').trim();
     const ref=(document.getElementById('ref').value||'').trim();
-    lines.push(`🚚 *Modalidade:* Entrega (via app — valor à parte)`);
+    lines.push(`🚚 *Modalidade:* Entrega`);
     lines.push(`🏡 *Endereço:* ${rua}, Nº ${numero}, Bairro ${bairro}`);
     lines.push(`📍 *Cidade/UF:* Porto Velho/RO`);
     if(cep) lines.push(`🔢 *CEP:* ${cep}`);
@@ -742,4 +842,4 @@ document.getElementById('openCart').addEventListener('click',openDrawer);
 document.getElementById('viewCartBtn').addEventListener('click',openDrawer);
 </script>
 </body>
-      </html>
+        </html>
