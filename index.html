@@ -416,9 +416,6 @@ select:focus, input[type="date"]:focus, input[type="time"]:focus { outline: none
         <label class="f-label" for="obs"><span class="ficon">✍️</span><span>Observações (opcional)</span></label>
         <textarea id="obs" class="form-input" rows="2" placeholder="Ex.: Aniversário, preferências..."></textarea>
       </div>
-      
-      <!-- BOTÃO DE TESTE DE DIAGNÓSTICO -->
-      <button id="testFunctionBtn" class="btn btn-outline" style="width:100%; margin-top:16px;">Testar Conexão</button>
     </div>
   </div>
 
@@ -700,17 +697,6 @@ if(cepInput){
   cepInput.addEventListener('keyup',()=>{if(onlyDigits(cepInput.value).length===8) lookup();});
 }
 
-// Lógica de diagnóstico
-document.getElementById('testFunctionBtn').onclick = async () => {
-    try {
-        const response = await fetch('/api/hello');
-        const data = await response.json();
-        showModal(`Sucesso! Resposta do servidor: "${data.message}"`, '✅');
-    } catch (error) {
-        showModal(`Erro no teste: ${error.message}`, '❌');
-    }
-};
-
 document.getElementById('calculateFeeBtn').onclick = async () => {
     const street = ruaInput.value.trim();
     const number = numeroInput.value.trim();
@@ -733,21 +719,18 @@ document.getElementById('calculateFeeBtn').onclick = async () => {
             body: JSON.stringify({ street, number, neighborhood, cep })
         });
 
-        // MUDANÇA PARA DIAGNÓSTICO
-        if (!response.ok) {
-            const errorText = await response.text(); // Pega a resposta como texto
-            throw new Error(`Erro ${response.status}: ${errorText}`);
-        }
-
         const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Erro desconhecido');
+        }
 
         deliveryFee = data.price;
         deliveryFeeValueEl.textContent = moneyBR(deliveryFee);
-        render();
+        render(); // Re-renderiza totais
         showModal(`Taxa de entrega calculada: ${moneyBR(deliveryFee)}`, '🚚');
 
     } catch (error) {
-        // Mostra o erro completo
         showModal(`Não foi possível calcular o frete: ${error.message}`);
         deliveryFee = 0;
         deliveryFeeValueEl.textContent = 'Erro';
@@ -842,4 +825,4 @@ document.getElementById('openCart').addEventListener('click',openDrawer);
 document.getElementById('viewCartBtn').addEventListener('click',openDrawer);
 </script>
 </body>
-        </html>
+</html>
