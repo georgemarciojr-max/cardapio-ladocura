@@ -110,7 +110,8 @@ label{font-size:12px;color:var(--ink);font-weight:700}
 
 /* subtotal + entrega */
 .cart-summary{padding-top:14px;margin-top:10px}
-.total{font-size:18px;font-weight:900;margin:8px 0 12px;color:#4b2e2e}
+.total-line{display:flex; justify-content: space-between; font-size: 16px; margin: 8px 0;}
+.total-line.grand-total { font-size: 18px; font-weight: 900; color: var(--choco); }
 .block-sep{margin:12px 0 10px;border-top:2px solid transparent;border-image:linear-gradient(90deg,var(--gold-300),var(--gold-500)) 1}
 /* segmento */
 .segmented{display:inline-flex;border:2px solid #f0b8cf;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 6px 16px rgba(231,161,189,.15)}
@@ -741,4 +742,4 @@ document.getElementById('openCart').addEventListener('click',openDrawer);
 document.getElementById('viewCartBtn').addEventListener('click',openDrawer);
 </script>
 </body>
-            </html>
+  </html>
