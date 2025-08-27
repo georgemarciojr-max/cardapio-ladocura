@@ -341,7 +341,7 @@ select:focus, input[type="date"]:focus, input[type="time"]:focus { outline: none
 
       <div class="delivery-box-container visible" data-mode-box="retirada">
         <div class="delivery-box">
-          <p class="muted" style="margin-top:12px"><strong>Local:</strong> Rua Francisco Said, 800 — Jardim Santana, Porto Velho/RO</p>
+          <p class="muted" style="margin-top:12px"><strong>Local:</strong> Rua José Faid, 800 — Jardim Santana, Porto Velho/RO</p>
           <a href="https://maps.app.goo.gl/iNEEjprE68qSqhhd9" target="_blank" rel="noopener" class="btn btn-outline" style="gap:8px">📍 Abrir no Google Maps</a>
           <div style="height:8px"></div>
           <label for="nomeRetirada" class="f-label"><span class="ficon">📝</span><span>Nome para retirada *</span></label>
@@ -351,7 +351,7 @@ select:focus, input[type="date"]:focus, input[type="time"]:focus { outline: none
 
       <div class="delivery-box-container" data-mode-box="entrega">
         <div class="delivery-box">
-          <p class="muted" style="margin-top:12px">Entrega via app (valor cobrado à parte).</p>
+          <p class="muted" style="margin-top:12px">A taxa de entrega é calculada com base na distância.</p>
           <label for="nomeEntrega" class="f-label"><span class="ficon">📝</span><span>Nome para entrega *</span></label>
           <input type="text" id="nomeEntrega" class="form-input" placeholder="Ex.: Maria Silva">
           
@@ -409,8 +409,6 @@ select:focus, input[type="date"]:focus, input[type="time"]:focus { outline: none
         <label class="f-label" for="obs"><span class="ficon">✍️</span><span>Observações (opcional)</span></label>
         <textarea id="obs" class="form-input" rows="2" placeholder="Ex.: Aniversário, preferências..."></textarea>
       </div>
-      
-      <button id="testFunctionBtn" class="btn btn-outline" style="width:100%; margin-top:16px;">Testar Conexão</button>
     </div>
   </div>
 
@@ -683,7 +681,8 @@ if(cepInput){
     try{
       const r=await fetch(`https://viacep.com.br/ws/${dig}/json/`); 
       const d=await r.json();
-      if(d && !d.erro){ if(!ruaInput.value)ruaInput.value=d.logouro||''; if(!bairroInput.value)bairroInput.value=d.bairro||'';}
+      // CORREÇÃO DO ERRO DE DIGITAÇÃO: logouro -> logradouro
+      if(d && !d.erro){ if(!ruaInput.value)ruaInput.value=d.logradouro||''; if(!bairroInput.value)bairroInput.value=d.bairro||''; numeroInput.focus();}
     }catch(e){}
     finally { cepSpinner.classList.remove('loading'); }
   }
@@ -691,16 +690,8 @@ if(cepInput){
   cepInput.addEventListener('keyup',()=>{if(onlyDigits(cepInput.value).length===8) lookup();});
 }
 
-// Lógica de diagnóstico
-document.getElementById('testFunctionBtn').onclick = async () => {
-    try {
-        const response = await fetch('/api/hello');
-        const data = await response.json();
-        showModal(`Sucesso! Resposta do servidor: "${data.message}"`, '✅');
-    } catch (error) {
-        showModal(`Erro no teste: ${error.message}`, '❌');
-    }
-};
+// O botão de diagnóstico foi removido pois não é mais necessário
+// document.getElementById('testFunctionBtn').onclick = ...
 
 document.getElementById('calculateFeeBtn').onclick = async () => {
     const street = ruaInput.value.trim();
@@ -715,7 +706,7 @@ document.getElementById('calculateFeeBtn').onclick = async () => {
 
     const btn = document.getElementById('calculateFeeBtn');
     btn.disabled = true;
-    btn.textContent = 'Calculando...';
+    btn.innerHTML = 'Calculando...';
 
     try {
         const response = await fetch('/api/calculate-delivery', {
@@ -724,21 +715,25 @@ document.getElementById('calculateFeeBtn').onclick = async () => {
             body: JSON.stringify({ street, number, neighborhood, cep })
         });
 
-        // MUDANÇA PARA DIAGNÓSTICO
-        if (!response.ok) {
-            const errorText = await response.text(); // Pega a resposta como texto
-            throw new Error(`Erro ${response.status}: ${errorText}`);
-        }
-
         const data = await response.json();
 
-        deliveryFee = data.price;
+        if (!response.ok) {
+            // Se o erro vier da nossa função, ele terá a propriedade 'error'
+            throw new Error(data.error || 'Ocorreu um erro desconhecido.');
+        }
+        
+        // CORREÇÃO DO ERRO DE PREÇO: data.price -> data.cost
+        let preco = data.cost;
+        if(preco > 100) {
+            preco = preco / 100;
+        }
+
+        deliveryFee = preco;
         deliveryFeeValueEl.textContent = moneyBR(deliveryFee);
-render();
+        render();
         showModal(`Taxa de entrega calculada: ${moneyBR(deliveryFee)}`, '🚚');
 
     } catch (error) {
-        // Mostra o erro completo
         showModal(`Não foi possível calcular o frete: ${error.message}`);
         deliveryFee = 0;
         deliveryFeeValueEl.textContent = 'Erro';
@@ -790,7 +785,9 @@ document.getElementById('checkoutBtn').onclick=()=>{
   }
   const lines=[];
   const subtotal = sum();
-  const grandTotal = subtotal + deliveryFee;
+  // Corrigido para garantir que a taxa de entrega seja um número
+  const finalDeliveryFee = typeof deliveryFee === 'number' ? deliveryFee : 0;
+  const grandTotal = subtotal + finalDeliveryFee;
 
   lines.push('🥰 Oiii, que alegria ver seu pedido concluído!');
   lines.push('Vou confirmar aqui com você o que escolheu, pode conferir junto comigo? 👇','');
@@ -802,13 +799,14 @@ document.getElementById('checkoutBtn').onclick=()=>{
   });
   lines.push(`📌 *Subtotal:* ${moneyBR(subtotal)}`);
   if(mode === 'entrega'){
-    lines.push(`🛵 *Taxa de Entrega:* ${moneyBR(deliveryFee)}`);
+    lines.push(`🛵 *Taxa de Entrega:* ${moneyBR(finalDeliveryFee)}`);
     lines.push(`💰 *Total Geral:* ${moneyBR(grandTotal)}`);
   }
   lines.push(`📅 *Data/Horário:* ${formatBR(chosenDateTime)} às ${timeValue}`);
   if(mode==='retirada'){
     lines.push(`🚶‍♀️ *Modalidade:* Retirada no local`);
-    lines.push(`🏡 *Nosso endereço:* Rua Francisco Said, 800 — Jardim Santana`);
+    // ENDEREÇO CORRIGIDO
+    lines.push(`🏡 *Nosso endereço:* Rua José Faid, 800 — Jardim Santana`);
     lines.push(`Você pode usar o mapa para chegar aqui sem erro: ${MAP_LINK} 📍`);
   }else{
     const rua=(document.getElementById('rua').value||'').trim();
@@ -834,3 +832,15 @@ document.getElementById('viewCartBtn').addEventListener('click',openDrawer);
 </script>
 </body>
 </html>
+
+```json
+{
+  "cost": 1500,
+  "distance": 10.8,
+  "duration": "21 minutos",
+  "durationInfo": {
+    "seconds": 1260,
+    "duration": "21 minutos"
+  },
+  "return": false
+}
