@@ -1,11 +1,11 @@
-// VERSÃO FINAL - Usando a estrutura "flat" do dev e "drivercategory" minúsculo
+// VERSÃO FINAL - Categoria Padrão (ID 3) fixa, sem necessidade de escolha do cliente.
 
 exports.handler = async function(event) {
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Method Not Allowed' };
     }
 
-    const { category, street, number, neighborhood } = JSON.parse(event.body);
+    const { street, number, neighborhood } = JSON.parse(event.body);
 
     const clientId = process.env.JUMA_CLIENT_ID;
     const clientSecret = process.env.JUMA_SECRET;
@@ -25,7 +25,7 @@ exports.handler = async function(event) {
         const accessToken = tokenData.token;
         
         const requestBody = {
-            "drivercategory": parseInt(category, 10),
+            "drivercategory": 3, // Categoria "Padrão" (Moto com bag) FIXA
             "address": {
                 "street": street,
                 "number": number,
