@@ -13,25 +13,19 @@
 </head>
 <body>
     <h1>Calcular Frete</h1>
+    <p>A entrega é feita por Motoboy (Padrão).</p>
     <form id="frete-form">
-        <label for="category">Escolha o tipo de entrega:</label>
-        <select id="category" required>
-            <option value="3">Moto com bag (Padrão)</option>
-            <option value="4">Moto com baú (Premium)</option>
-            <option value="5">Moto com carretinha (Retorno)</option>
-        </select>
-        
         <label for="cep">CEP:</label>
-        <input type="text" id="cep" value="76820088" required>
+        <input type="text" id="cep" required>
 
         <label for="street">Rua/Avenida:</label>
-        <input type="text" id="street" value="Uruguai" required>
+        <input type="text" id="street" required>
 
         <label for="number">Número:</label>
-        <input type="text" id="number" value="400" required>
+        <input type="text" id="number" required>
         
         <label for="neighborhood">Bairro:</label>
-        <input type="text" id="neighborhood" value="Nova Porto Velho" required>
+        <input type="text" id="neighborhood" required>
 
         <button type="submit">Calcular</button>
     </form>
@@ -46,8 +40,7 @@
             event.preventDefault();
             resultadoDiv.textContent = 'Calculando...';
 
-            const dadosCalculo = {
-                category: document.getElementById('category').value,
+            const dadosEndereco = {
                 cep: document.getElementById('cep').value,
                 street: document.getElementById('street').value,
                 number: document.getElementById('number').value,
@@ -58,7 +51,7 @@
                 const response = await fetch('/.netlify/functions/calculate-delivery', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dadosCalculo)
+                    body: JSON.stringify(dadosEndereco)
                 });
 
                 const data = await response.json();
@@ -67,9 +60,10 @@
                     throw new Error(data.error || 'Ocorreu um erro desconhecido.');
                 }
                 
-                // Se a chamada for um SUCESSO, mostramos a resposta completa para descobrirmos o nome do campo do preço
+                // --- PREÇO SENDO MOSTRADO CORRETAMENTE ---
+                const preco = data.cost / 100;
                 resultadoDiv.style.color = 'green';
-                resultadoDiv.textContent = `SUCESSO! Resposta da API: ${JSON.stringify(data)}`;
+                resultadoDiv.textContent = `Valor do frete: R$ ${preco.toFixed(2).replace('.', ',')}`;
 
             } catch (error) {
                 resultadoDiv.style.color = 'red';
