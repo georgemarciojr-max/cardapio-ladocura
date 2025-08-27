@@ -8,7 +8,7 @@
         body { font-family: sans-serif; max-width: 500px; margin: 2rem auto; padding: 1rem; }
         input, select { width: 98%; padding: 8px; margin-bottom: 10px; }
         button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; cursor: pointer; }
-        #resultado { margin-top: 20px; font-weight: bold; }
+        #resultado { margin-top: 20px; font-weight: bold; word-break: break-all; }
     </style>
 </head>
 <body>
@@ -16,22 +16,22 @@
     <form id="frete-form">
         <label for="category">Escolha o tipo de entrega:</label>
         <select id="category" required>
-            <option value="0">Motoboy Padrão</option>
             <option value="1">Motoboy Premium</option>
             <option value="2">Motoboy com Retorno</option>
+            <option value="3">Motoboy Padrão</option>
         </select>
         
         <label for="cep">CEP:</label>
-        <input type="text" id="cep" required>
+        <input type="text" id="cep" value="76820088" required>
 
         <label for="street">Rua/Avenida:</label>
-        <input type="text" id="street" required>
+        <input type="text" id="street" value="Uruguai" required>
 
         <label for="number">Número:</label>
-        <input type="text" id="number" required>
+        <input type="text" id="number" value="400" required>
         
         <label for="neighborhood">Bairro:</label>
-        <input type="text" id="neighborhood" required>
+        <input type="text" id="neighborhood" value="Nova Porto Velho" required>
 
         <button type="submit">Calcular</button>
     </form>
@@ -64,12 +64,13 @@
                 const data = await response.json();
 
                 if (!response.ok) {
+                    // Se o erro vier da nossa função, ele terá a propriedade 'error'
                     throw new Error(data.error || 'Ocorreu um erro desconhecido.');
                 }
                 
-                const preco = data.price / 100;
+                // Se a chamada for um SUCESSO, mostramos a resposta completa
                 resultadoDiv.style.color = 'green';
-                resultadoDiv.textContent = `Valor do frete: R$ ${preco.toFixed(2).replace('.', ',')}`;
+                resultadoDiv.textContent = `SUCESSO! Resposta da API: ${JSON.stringify(data)}`;
 
             } catch (error) {
                 resultadoDiv.style.color = 'red';
