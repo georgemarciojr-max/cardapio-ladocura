@@ -1,82 +1,71 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calcular Frete</title>
-    <style>
-        body { font-family: sans-serif; max-width: 500px; margin: 2rem auto; padding: 1rem; }
-        input, select { width: 98%; padding: 8px; margin-bottom: 10px; }
-        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; cursor: pointer; }
-        #resultado { margin-top: 20px; font-weight: bold; word-break: break-all; }
-    </style>
-</head>
-<body>
-    <h1>Calcular Frete</h1>
-    <form id="frete-form">
-        <label for="category">Escolha o tipo de entrega:</label>
-        <select id="category" required>
-            <option value="3">Motoboy Padrão</option>
-            <option value="4">Motoboy Premium</option>
-            <option value="5">Motoboy com Retorno</option>
-        </select>
-        
-        <label for="cep">CEP:</label>
-        <input type="text" id="cep" required>
+// VERSÃO FINAL - Voltando à estrutura "origin/destination" que obteve sucesso anteriormente.
 
-        <label for="street">Rua/Avenida:</label>
-        <input type="text" id="street" required>
+exports.handler = async function(event) {
+    if (event.httpMethod !== 'POST') {
+        return { statusCode: 405, body: 'Method Not Allowed' };
+    }
 
-        <label for="number">Número:</label>
-        <input type="text" id="number" required>
-        
-        <label for="neighborhood">Bairro:</label>
-        <input type="text" id="neighborhood" required>
+    const { category, street, number, neighborhood, cep } = JSON.parse(event.body);
 
-        <button type="submit">Calcular</button>
-    </form>
-    
-    <div id="resultado"></div>
+    const clientId = process.env.JUMA_CLIENT_ID;
+    const clientSecret = process.env.JUMA_SECRET;
 
-    <script>
-        const form = document.getElementById('frete-form');
-        const resultadoDiv = document.getElementById('resultado');
+    if (!clientId || !clientSecret) {
+        return { statusCode: 500, body: JSON.stringify({ error: "Credenciais do servidor não configuradas." }) };
+    }
 
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            resultadoDiv.textContent = 'Calculando...';
-
-            const dadosCalculo = {
-                category: document.getElementById('category').value,
-                cep: document.getElementById('cep').value,
-                street: document.getElementById('street').value,
-                number: document.getElementById('number').value,
-                neighborhood: document.getElementById('neighborhood').value
-            };
-
-            try {
-                const response = await fetch('/.netlify/functions/calculate-delivery', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dadosCalculo)
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Ocorreu um erro desconhecido.');
-                }
-                
-                // --- MUDANÇA IMPORTANTE AQUI ---
-                // Em vez de tentar adivinhar o preço, vamos mostrar a resposta completa da API.
-                resultadoDiv.style.color = 'green';
-                resultadoDiv.textContent = `SUCESSO! Resposta da API: ${JSON.stringify(data)}`;
-
-            } catch (error) {
-                resultadoDiv.style.color = 'red';
-                resultadoDiv.textContent = `Não foi possível calcular o frete: ${error.message}`;
-            }
+    try {
+        // ETAPA 1: OBTER O BEARER TOKEN (Funcionando)
+        const tokenResponse = await fetch('https://api.dev.jumaentregas.com.br/auth/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ "clientid": clientId, "secret": clientSecret })
         });
-    </script>
-</body>
-</html>
+        const tokenData = await tokenResponse.json();
+        if (!tokenResponse.ok) throw new Error('Falha na autenticação com a Juma.');
+        const accessToken = tokenData.token;
+
+        // ETAPA 2: CALCULAR O FRETE COM A ESTRUTURA "origin/destination"
+        const requestBody = {
+            "origin": {
+                "address": "Rua José Faid, 800 - Jardim Santana, Porto Velho - RO, 76828-325",
+                "latitude": 0,
+                "longitude": 0
+            },
+            "destination": {
+                "address": `${street}, ${number} - ${neighborhood}, Porto Velho - RO, ${cep}`,
+                "latitude": 0,
+                "longitude": 0
+            },
+            "driverCategory": parseInt(category, 10),
+            "paymentType": "DINHEIRO"
+        };
+        
+        const freteResponse = await fetch('https://api.dev.jumaentregas.com.br/destinations', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        const freteData = await freteResponse.json();
+
+        if (!freteResponse.ok) {
+            const errorMessage = freteData.message || 'Erro da API Juma.';
+            throw new Error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
+        }
+        
+        return {
+            statusCode: 200,
+            body: JSON.stringify(freteData)
+        };
+
+    } catch (error) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: error.message })
+        };
+    }
+};
