@@ -20,6 +20,7 @@
   --choco:#4b2e2e; --ink:#6b4b4b;
   --gold-300:#e2c38c; --gold-500:#b8903c;
   --green-300:#34d399; --green-500:#059669;
+  --red-400:#fb7185;
   --radius:18px; --shadow:0 12px 28px rgba(0,0,0,.08);
 }
 *{box-sizing:border-box} html,body{margin:0}
@@ -149,6 +150,14 @@ select:focus, input[type="date"]:focus, input[type="time"]:focus { outline: none
     gap: 10px;
     flex-shrink: 0;
 }
+/* NOVOS ESTILOS PARA CUPOM */
+.coupon-area{margin-top:10px}
+.coupon-input-wrap{display:flex;gap:8px}
+.coupon-input-wrap input{flex-grow:1;text-transform:uppercase}
+.coupon-input-wrap button{padding:10px 16px;flex-shrink:0}
+#couponMessage{font-size:13px;font-weight:700;margin-top:8px;text-align:center}
+#couponMessage.success{color:var(--green-500)}
+#couponMessage.error{color:var(--red-400)}
 </style>
 </head>
 <body>
@@ -280,11 +289,25 @@ select:focus, input[type="date"]:focus, input[type="time"]:focus { outline: none
             <span>Taxa de Entrega:</span>
             <span id="deliveryFeeValue">A calcular</span>
         </div>
+        <div class="total-line" id="discount-line" style="display: none;">
+            <span>Desconto:</span>
+            <span id="discountValue">R$ 0,00</span>
+        </div>
         <div class="total-line grand-total">
             <span>Total Geral:</span>
             <span id="grandTotalValue">R$ 0,00</span>
         </div>
       </div>
+      
+      <div class="coupon-area">
+        <label for="couponInput" class="f-label"><span class="ficon">🎟️</span><span>Tem um cupom?</span></label>
+        <div class="coupon-input-wrap">
+            <input type="text" id="couponInput" class="form-input" placeholder="Ex: DOCURA10">
+            <button type="button" class="btn btn-outline" id="applyCouponBtn">Aplicar</button>
+        </div>
+        <div id="couponMessage"></div>
+      </div>
+
 
       <div class="block-sep"></div>
 
@@ -517,18 +540,22 @@ document.querySelectorAll('article.card[data-key]').forEach(article=>{
 });
 let cart=[]; let additions=0;
 let deliveryFee = 0;
+let appliedCoupon = null;
+let discountAmount = 0;
 const CART_KEY='ladocura_cart_v18';
 const cartItemsEl=document.getElementById('cartItems');
 const subtotalValueEl = document.getElementById('subtotalValue');
 const deliveryFeeLineEl = document.getElementById('delivery-fee-line');
 const deliveryFeeValueEl = document.getElementById('deliveryFeeValue');
+const discountLineEl = document.getElementById('discount-line');
+const discountValueEl = document.getElementById('discountValue');
 const grandTotalValueEl = document.getElementById('grandTotalValue');
 const cartCountEl=document.getElementById('cartCount');
 const mobileSubtotal=document.getElementById('mobileSubtotal');
 const cartBadgeEl = document.querySelector('#openCart .cart-badge');
 
-function persist(){localStorage.setItem(CART_KEY,JSON.stringify({cart,additions}));}
-(function load(){try{const raw=JSON.parse(localStorage.getItem(CART_KEY)); if(raw){cart=raw.cart||[]; additions=raw.additions||0;}}catch(e){} render();})();
+function persist(){localStorage.setItem(CART_KEY,JSON.stringify({cart,additions,appliedCoupon}));}
+(function load(){try{const raw=JSON.parse(localStorage.getItem(CART_KEY)); if(raw){cart=raw.cart||[]; additions=raw.additions||0; appliedCoupon=raw.appliedCoupon||null;}}catch(e){} render();})();
 function addToCart(item){
   const idx=cart.findIndex(i=>i.key===item.key&&i.flavor===item.flavor&&i.pack===item.pack&&(i.tema||'')===(item.tema||''));
   if(idx>-1) cart[idx].count++; else cart.push(item);
@@ -588,7 +615,20 @@ function render(){
   });
   
   const subtotal = sum();
-  const grandTotal = subtotal + deliveryFee;
+  discountAmount = 0;
+  if(appliedCoupon) {
+      if(appliedCoupon.type === 'percentage') {
+          discountAmount = subtotal * (appliedCoupon.value / 100);
+      } else if (appliedCoupon.type === 'delivery') {
+          discountAmount = deliveryFee > 0 ? deliveryFee : 0;
+      }
+      discountLineEl.style.display = 'flex';
+      discountValueEl.textContent = `-${moneyBR(discountAmount)}`;
+  } else {
+      discountLineEl.style.display = 'none';
+  }
+  
+  const grandTotal = Math.max(0, subtotal + deliveryFee - discountAmount);
   subtotalValueEl.textContent = moneyBR(subtotal);
   grandTotalValueEl.textContent = moneyBR(grandTotal);
   mobileSubtotal.textContent = `Total: ${moneyBR(grandTotal)}`;
@@ -614,6 +654,7 @@ modeBtns.forEach(b=>b.onclick=()=>{
   if (mode === 'retirada') {
       deliveryFee = 0;
       deliveryFeeValueEl.textContent = 'A calcular';
+      appliedCoupon = null; // Remove cupom de frete se mudar para retirada
   }
   render();
 });
@@ -648,15 +689,12 @@ if(cepInput){
   cepInput.addEventListener('keyup',()=>{if(onlyDigits(cepInput.value).length===8) lookup();});
 }
 
-// O botão de teste foi removido pois não é mais necessário
-
 document.getElementById('calculateFeeBtn').onclick = async () => {
     const street = ruaInput.value.trim();
     const number = numeroInput.value.trim();
     const neighborhood = bairroInput.value.trim();
     const cep = cepInput.value.trim();
 
-    // Apenas Rua, Número e Bairro são obrigatórios para o CÁLCULO
     if (!street || !number || !neighborhood) {
         showModal('Por favor, preencha Rua, Número e Bairro para calcular o frete.');
         return;
@@ -672,23 +710,17 @@ document.getElementById('calculateFeeBtn').onclick = async () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ street, number, neighborhood, cep })
         });
-
         const data = await response.json();
-
         if (!response.ok) {
             throw new Error(data.error || 'Ocorreu um erro desconhecido.');
         }
         
         let preco = data.cost;
-        if(preco > 100) {
-            preco = preco / 100;
-        }
-
+        if(preco > 100) { preco = preco / 100; }
         deliveryFee = preco;
         deliveryFeeValueEl.textContent = moneyBR(deliveryFee);
         render();
         showModal(`Taxa de entrega calculada: ${moneyBR(deliveryFee)}`, '🚚');
-
     } catch (error) {
         showModal(`Não foi possível calcular o frete: ${error.message}`);
         deliveryFee = 0;
@@ -697,6 +729,44 @@ document.getElementById('calculateFeeBtn').onclick = async () => {
     } finally {
         btn.disabled = false;
         btn.innerHTML = `<svg style="width:20px; height:20px" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg><span>Calcular Frete</span>`;
+    }
+};
+
+const applyCouponBtn = document.getElementById('applyCouponBtn');
+const couponInput = document.getElementById('couponInput');
+const couponMessageEl = document.getElementById('couponMessage');
+applyCouponBtn.onclick = async () => {
+    const couponCode = couponInput.value.trim();
+    if (!couponCode) {
+        showModal('Por favor, digite um código de cupom.');
+        return;
+    }
+
+    couponMessageEl.textContent = 'Verificando...';
+    couponMessageEl.className = '';
+
+    try {
+        const response = await fetch('/api/verify-coupon', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ couponCode })
+        });
+        const data = await response.json();
+        if(!response.ok) {
+            throw new Error(data.message || 'Erro ao verificar cupom.');
+        }
+
+        appliedCoupon = data.coupon;
+        couponMessageEl.classList.add('success');
+        couponMessageEl.textContent = 'Cupom aplicado com sucesso! ✅';
+
+    } catch (error) {
+        appliedCoupon = null;
+        couponMessageEl.classList.add('error');
+        couponMessageEl.textContent = error.message;
+    } finally {
+        persist();
+        render();
     }
 };
 
@@ -734,7 +804,7 @@ document.getElementById('checkoutBtn').onclick=()=>{
   }else{
     nome = validateField(document.getElementById('nomeEntrega'), 'Por gentileza, informe o nome para entrega 🌸');
     if (!nome) return;
-    if (deliveryFee <= 0) {
+    if (deliveryFee <= 0 && (!appliedCoupon || appliedCoupon.type !== 'delivery')) {
         showModal('Por favor, calcule a taxa de entrega antes de finalizar o pedido.');
         return;
     }
@@ -742,10 +812,9 @@ document.getElementById('checkoutBtn').onclick=()=>{
   const lines=[];
   const subtotal = sum();
   const finalDeliveryFee = typeof deliveryFee === 'number' ? deliveryFee : 0;
-  const grandTotal = subtotal + finalDeliveryFee;
+  const grandTotal = Math.max(0, subtotal + finalDeliveryFee - discountAmount);
 
-  // --- MENSAGEM DO WHATSAPP CORRIGIDA ---
-  lines.push('Olá, La Doçura! Gostaria de fazer o seguinte pedido:','');
+  lines.push('Olá, La Doçura! 🍰 Gostaria de fazer o seguinte pedido:','');
   lines.push(`*Resumo do Pedido*`);
   lines.push(`📝 *Pedido para:* ${nome}`,'');
   lines.push(`🛍️ *Itens:*`);
@@ -757,6 +826,9 @@ document.getElementById('checkoutBtn').onclick=()=>{
   lines.push('');
   lines.push(`*Valores:*`);
   lines.push(`- Subtotal: ${moneyBR(subtotal)}`);
+  if(appliedCoupon && discountAmount > 0){
+      lines.push(`- Desconto (Cupom): -${moneyBR(discountAmount)}`);
+  }
   if(mode === 'entrega'){
     lines.push(`- Taxa de Entrega: ${moneyBR(finalDeliveryFee)}`);
     lines.push(`- *Total Geral:* ${moneyBR(grandTotal)}`);
@@ -783,7 +855,7 @@ document.getElementById('checkoutBtn').onclick=()=>{
       lines.push('');
       lines.push(`*Observações:* ${obs}`);
   }
-  lines.push('','Aguardo a confirmação e as informações para pagamento. Obrigado(a)!');
+  lines.push('','Aguardo a confirmação e as informações para o pagamento. Obrigado(a)! 💖');
   
   const url=`https://wa.me/${PHONE}?text=${encodeURIComponent(lines.join('\n'))}`; 
   window.open(url,'_blank');
