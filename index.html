@@ -150,7 +150,6 @@ select:focus, input[type="date"]:focus, input[type="time"]:focus { outline: none
     gap: 10px;
     flex-shrink: 0;
 }
-/* NOVOS ESTILOS PARA CUPOM */
 .coupon-area{margin-top:10px}
 .coupon-input-wrap{display:flex;gap:8px}
 .coupon-input-wrap input{flex-grow:1;text-transform:uppercase}
@@ -302,12 +301,11 @@ select:focus, input[type="date"]:focus, input[type="time"]:focus { outline: none
       <div class="coupon-area">
         <label for="couponInput" class="f-label"><span class="ficon">🎟️</span><span>Tem um cupom?</span></label>
         <div class="coupon-input-wrap">
-            <input type="text" id="couponInput" class="form-input" placeholder="Ex: DOCURA10">
+            <input type="text" id="couponInput" class="form-input" placeholder="Digite seu cupom">
             <button type="button" class="btn btn-outline" id="applyCouponBtn">Aplicar</button>
         </div>
         <div id="couponMessage"></div>
       </div>
-
 
       <div class="block-sep"></div>
 
@@ -654,7 +652,7 @@ modeBtns.forEach(b=>b.onclick=()=>{
   if (mode === 'retirada') {
       deliveryFee = 0;
       deliveryFeeValueEl.textContent = 'A calcular';
-      appliedCoupon = null; // Remove cupom de frete se mudar para retirada
+      appliedCoupon = null;
   }
   render();
 });
@@ -710,17 +708,23 @@ document.getElementById('calculateFeeBtn').onclick = async () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ street, number, neighborhood, cep })
         });
+
         const data = await response.json();
+
         if (!response.ok) {
             throw new Error(data.error || 'Ocorreu um erro desconhecido.');
         }
         
         let preco = data.cost;
-        if(preco > 100) { preco = preco / 100; }
+        if(preco > 100) {
+            preco = preco / 100;
+        }
+
         deliveryFee = preco;
         deliveryFeeValueEl.textContent = moneyBR(deliveryFee);
         render();
         showModal(`Taxa de entrega calculada: ${moneyBR(deliveryFee)}`, '🚚');
+
     } catch (error) {
         showModal(`Não foi possível calcular o frete: ${error.message}`);
         deliveryFee = 0;
@@ -814,29 +818,25 @@ document.getElementById('checkoutBtn').onclick=()=>{
   const finalDeliveryFee = typeof deliveryFee === 'number' ? deliveryFee : 0;
   const grandTotal = Math.max(0, subtotal + finalDeliveryFee - discountAmount);
 
-  lines.push('Olá, La Doçura! 🍰 Gostaria de fazer o seguinte pedido:','');
-  lines.push(`*Resumo do Pedido*`);
-  lines.push(`📝 *Pedido para:* ${nome}`,'');
-  lines.push(`🛍️ *Itens:*`);
+  // --- MENSAGEM DO WHATSAPP COM EMOJIS ANTIGOS E TOM DA MARCA ---
+  lines.push('🥰 Oiii, gostaria de fazer um pedido!');
+  lines.push('Pode confirmar pra mim, por favor? 👇','');
+  lines.push(`🌸 *Pedido para:* ${nome}`,'',`*Itens:*`);
   cart.forEach((it,i)=>{
     const tot=it.price*it.count;
     const tema=it.tema?` • Tema: ${it.tema}`:"";
-    lines.push(`*${i+1})* ${it.title} (${it.flavor}, ${it.pack} un) - ${it.count}x = ${moneyBR(tot)}${tema}`);
+    lines.push(`*${i+1})* ${it.title} • Sabor: ${it.flavor} • Pacote: ${it.pack} un • Qtd: ${it.count} • Total: ${moneyBR(tot)}${tema}`,'');
   });
-  lines.push('');
-  lines.push(`*Valores:*`);
-  lines.push(`- Subtotal: ${moneyBR(subtotal)}`);
+  lines.push(`📌 *Subtotal:* ${moneyBR(subtotal)}`);
   if(appliedCoupon && discountAmount > 0){
-      lines.push(`- Desconto (Cupom): -${moneyBR(discountAmount)}`);
+      lines.push(`🎟️ *Desconto (Cupom):* -${moneyBR(discountAmount)}`);
   }
   if(mode === 'entrega'){
-    lines.push(`- Taxa de Entrega: ${moneyBR(finalDeliveryFee)}`);
-    lines.push(`- *Total Geral:* ${moneyBR(grandTotal)}`);
+    lines.push(`🛵 *Taxa de Entrega:* ${moneyBR(finalDeliveryFee)}`);
+    lines.push(`💰 *Total Geral:* ${moneyBR(grandTotal)}`);
   }
   lines.push('');
-  lines.push(`*Detalhes da Entrega/Retirada:*`);
-  lines.push(`📅 *Data e Horário:* ${formatBR(chosenDateTime)} às ${timeValue}`);
-
+  lines.push(`📅 *Data/Horário:* ${formatBR(chosenDateTime)} às ${timeValue}`);
   if(mode==='retirada'){
     lines.push(`🚶‍♀️ *Modalidade:* Retirada no local.`);
   }else{
@@ -846,16 +846,16 @@ document.getElementById('checkoutBtn').onclick=()=>{
     const cep=(document.getElementById('cep').value||'').trim();
     const ref=(document.getElementById('ref').value||'').trim();
     lines.push(`🚚 *Modalidade:* Entrega.`);
-    lines.push(`📍 *Endereço:* ${rua}, Nº ${numero}, Bairro ${bairro}.`);
+    lines.push(`🏡 *Endereço:* ${rua}, Nº ${numero}, Bairro ${bairro}`);
     if(cep) lines.push(`- CEP: ${cep}`);
     if(ref) lines.push(`- Referência: ${ref}`);
   }
   const obs=(document.getElementById('obs').value||'').trim(); 
   if(obs) {
       lines.push('');
-      lines.push(`*Observações:* ${obs}`);
+      lines.push(`📝 *Observações:* ${obs}`);
   }
-  lines.push('','Aguardo a confirmação e as informações para o pagamento. Obrigado(a)! 💖');
+  lines.push('','Aguardo sua confirmação para combinarmos o pagamento. Muito obrigado(a)! 💖');
   
   const url=`https://wa.me/${PHONE}?text=${encodeURIComponent(lines.join('\n'))}`; 
   window.open(url,'_blank');
