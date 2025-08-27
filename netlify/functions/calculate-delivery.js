@@ -1,11 +1,11 @@
-// VERSÃO FINAL - Voltando à estrutura "origin/destination" que obteve sucesso anteriormente.
+// VERSÃO FINAL - Usando a estrutura "flat" do dev e "drivercategory" minúsculo
 
 exports.handler = async function(event) {
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Method Not Allowed' };
     }
 
-    const { category, street, number, neighborhood, cep } = JSON.parse(event.body);
+    const { category, street, number, neighborhood } = JSON.parse(event.body);
 
     const clientId = process.env.JUMA_CLIENT_ID;
     const clientSecret = process.env.JUMA_SECRET;
@@ -15,7 +15,6 @@ exports.handler = async function(event) {
     }
 
     try {
-        // ETAPA 1: OBTER O BEARER TOKEN (Funcionando)
         const tokenResponse = await fetch('https://api.dev.jumaentregas.com.br/auth/token', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -24,21 +23,19 @@ exports.handler = async function(event) {
         const tokenData = await tokenResponse.json();
         if (!tokenResponse.ok) throw new Error('Falha na autenticação com a Juma.');
         const accessToken = tokenData.token;
-
-        // ETAPA 2: CALCULAR O FRETE COM A ESTRUTURA "origin/destination"
+        
         const requestBody = {
-            "origin": {
-                "address": "Rua José Faid, 800 - Jardim Santana, Porto Velho - RO, 76828-325",
-                "latitude": 0,
-                "longitude": 0
+            "drivercategory": parseInt(category, 10),
+            "address": {
+                "street": street,
+                "number": number,
+                "neighborhood": neighborhood,
+                "city": "Porto Velho",
+                "state": "RO"
             },
-            "destination": {
-                "address": `${street}, ${number} - ${neighborhood}, Porto Velho - RO, ${cep}`,
-                "latitude": 0,
-                "longitude": 0
-            },
-            "driverCategory": parseInt(category, 10),
-            "paymentType": "DINHEIRO"
+            "latitude": 0,
+            "longitude": 0,
+            "return": false
         };
         
         const freteResponse = await fetch('https://api.dev.jumaentregas.com.br/destinations', {
