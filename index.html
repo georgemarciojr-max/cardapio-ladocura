@@ -12,6 +12,7 @@
 <meta property="og:description" content="Clique para ver nossos doces, montar seu pedido e se encantar. Feito com carinho para você!">
 <meta property="og:image" content="https://i.postimg.cc/94nCdB6P/logo.jpg"> 
 <meta property="og:type" content="website">
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -24,64 +25,49 @@
 *{box-sizing:border-box} html,body{margin:0}
 body{font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#3b2b2b;background:radial-gradient(1400px 280px at 50% -120px,var(--rose-100),transparent),linear-gradient(180deg,var(--rose-50),#fff 40%)}
 .pink{color:var(--rose-400)} .container{max-width:940px;margin:0 auto;padding:0 16px}
-/* header */
 .topbar{position:sticky;top:0;z-index:60;background:#fff8fbf2;backdrop-filter:blur(6px);border-bottom:1px solid #f3d9e4}
 .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--choco)}
 .brand-svg{width:40px;height:40px}.brand-name{font-family:"Great Vibes",cursive;font-size:28px}
-/* cart icon */
 .cart-btn{position:relative;display:inline-flex;align-items:center;gap:10px;border:0;background:transparent;cursor:pointer}
 .cart-badge{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:conic-gradient(from 220deg at 50% 50%, #ffd9e6, #ffc9dc, #ffdce9);border:1.5px solid #f4cbd7; box-shadow:0 6px 14px rgba(231,161,189,.25)}
 .cart-badge svg{width:20px;height:20px;fill:#7e3a54}
 .cart-count{position:absolute;right:-6px;top:-6px;min-width:20px;height:20px;border-radius:999px;background:linear-gradient(135deg,var(--rose-300),var(--rose-400));color:#fff;display:grid;place-items:center;padding:0 6px;font-size:12px;font-weight:800;border:2px solid #fff}
-/* hero */
 .hero{padding:28px 0 10px}
 .hero h1{margin:0 0 8px;color:var(--choco);font-size:clamp(22px,6vw,40px);line-height:1.15}
 .subtitle{color:#6a4a4a;margin:0 0 18px;font-size:clamp(14px,3.6vw,18px)}
-/* benefícios */
 .features{display:grid;grid-template-columns:1fr;gap:10px}
 .feature{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:#fff;border:1px solid #f4d6df; box-shadow:0 8px 18px rgba(231,161,189,.12);position:relative;overflow:hidden}
 .feature:after{content:"";position:absolute;bottom:-1px;left:10%;right:10%;height:2px;background:linear-gradient(90deg,var(--gold-300),var(--gold-500));opacity:.7}
 .fi{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,#ffeaf2,#ffd6e6);border:1px solid #f4cbd7}
 .fi svg{width:20px;height:20px;fill:#7e3a54}
 .feature b{color:#5b3a3a}
-/* floral */
 .page-floral{position:fixed; inset:auto -12vw -18vh auto; width:42vw; max-width:560px; opacity:.06; pointer-events:none; z-index:-1}
-/* sections */
 .section{padding:18px 0}
 .section-title{font-size:clamp(20px,5vw,30px);margin:0 0 6px;color:var(--choco)}
 .section-sub{color:#775555;margin:0 0 10px}
-/* cards */
 .stack{display:grid;gap:14px}
 .card{background:#fff;border:1px solid #f4d6df;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);padding:14px;position:relative}
 .card:hover{box-shadow:0 16px 30px rgba(231,161,189,.22)}
-/* selo (ajustado) */
 .pill{display:inline-block;font-size:16px;line-height:1;padding:10px 14px;border-radius:999px;font-weight:900;color:#7e3a54;background:#fff;border:2px solid #f4d6df;box-shadow:inset 0 0 0 1px rgba(255,255,255,.5), 0 4px 10px rgba(231,161,189,.15);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (min-width:600px){ .pill{font-size:18px;} }
-/* subtítulo (menor) */
 .product-title{margin:10px 0 6px;font-size:16px;line-height:1.25;color:#5a3a3a;font-weight:800}
-/* form */
 .order-form{display:grid;gap:10px}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 label{font-size:12px;color:var(--ink);font-weight:700}
 .price-line{margin:-2px 0 4px;color:#573333;font-weight:700}
 .price-flash{animation:flash .35s ease}
 @keyframes flash{from{opacity:.25;transform:translateY(-1px)}to{opacity:1;transform:none}}
-/* botões */
 .btn{--bg1: var(--rose-300); --bg2: var(--rose-400);display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:14px;border:0;color:#fff;font-weight:900;cursor:pointer;background:linear-gradient(135deg,var(--bg1),var(--bg2));position:relative;box-shadow:0 10px 18px rgba(231,161,189,.25);transition:transform .15s ease, box-shadow .15s ease, filter .15s ease}
 .btn:before{content:"";position:absolute;inset:1px; border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.40),transparent 48%);pointer-events:none;mix-blend:screen;opacity:.85}
 .btn:hover{transform:translateY(-1px);box-shadow:0 12px 22px rgba(231,161,189,.32)} .btn:active{transform:translateY(0)}
 .btn:focus-visible{outline:3px solid rgba(231,161,189,.6);outline-offset:2px}
 .btn-outline{background:#fff;color:#7e3a54;border:2px solid #e7a1bd;box-shadow:none}
 .add-row{display:flex;justify-content:center} .add-btn{min-width:200px;border-radius:20px}
-
-/* Estilo refinado para botão adicionado e toast */
 .add-btn.added{--bg1:var(--green-300);--bg2:var(--green-500); box-shadow:0 10px 18px rgba(5, 150, 105, .25);}
 .toast{position:fixed;left:50%;bottom:82px;transform:translateX(-50%) translateY(16px);background:linear-gradient(135deg, var(--green-300), var(--green-500));color:#fff;padding:10px 16px;border-radius:14px;font-weight:800;box-shadow:0 8px 18px rgba(0,0,0,.2);opacity:0;pointer-events:none;z-index:90;transition:opacity .25s ease, transform .25s ease; position:relative;}
 .toast:before{content:"";position:absolute;inset:1px; border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.40),transparent 48%);pointer-events:none;mix-blend:screen;opacity:.85}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)} .toast .check{margin-right:8px}
-
-/* drawer carrinho */
 .drawer{position:fixed;inset:auto 0 0 auto;top:0;right:-420px;width:min(400px,92%);height:100%;background:#fff;border-left:1px solid #f4d6df;box-shadow:-12px 0 24px rgba(0,0,0,.12);transition:right .28s ease;z-index:80;display:flex;flex-direction:column}
 .drawer.open{right:0}
 .drawer-header{position:sticky;top:0;background:#fff;padding:14px;border-bottom:0;display:flex;align-items:center;justify-content:space-between;z-index:1; flex-shrink: 0;}
@@ -91,11 +77,8 @@ label{font-size:12px;color:var(--ink);font-weight:700}
 .title-underline{position:absolute;left:14px;right:14px;bottom:0;height:3px;background:linear-gradient(90deg,var(--rose-400),var(--gold-500));border-radius:999px;opacity:.35}
 .drawer-close{background:#fff;border:2px solid #f4cbd7;border-radius:12px;padding:6px 10px;font-weight:800;color:#7e3a54;cursor:pointer}
 .drawer-body{padding:12px 14px;overflow:auto;flex:1}
-
-/* Animação de remoção de item */
 .cart-item{border-bottom:1px dashed #f1c9d8;padding:12px 0;transition:opacity .3s ease, max-height .3s ease, padding .3s ease, margin .3s ease; overflow:hidden; max-height:200px}
 .cart-item.removing{opacity:0; max-height:0; padding-top:0; padding-bottom:0; margin-bottom:-1px; border:0;}
-
 .item-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start}
 .item-info h4{margin:0 0 6px;font-size:18px;font-weight:900;color:#5a3a3a}
 .item-info .muted{color:#7c6a6a;font-size:13px;margin:4px 0}
@@ -103,96 +86,68 @@ label{font-size:12px;color:var(--ink);font-weight:700}
 .qty-ctl{display:inline-flex;align-items:center;gap:6px}
 .qty-ctl button{width:34px;height:34px;border-radius:10px;border:1px solid #f1c9d8;background:#fff;cursor:pointer;font-weight:800;color:#7e3a54}
 .rmv{background:#fff;border:1px solid #f4cbd7;border-radius:999px;padding:8px 12px;cursor:pointer;font-weight:800;color:#7e3a54}
-
-/* subtotal + entrega */
 .cart-summary{padding-top:14px;margin-top:10px}
 .total-line{display:flex; justify-content: space-between; font-size: 16px; margin: 8px 0;}
 .total-line.grand-total { font-size: 18px; font-weight: 900; color: var(--choco); }
 .block-sep{margin:12px 0 10px;border-top:2px solid transparent;border-image:linear-gradient(90deg,var(--gold-300),var(--gold-500)) 1}
-/* segmento */
 .segmented{display:inline-flex;border:2px solid #f0b8cf;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 6px 16px rgba(231,161,189,.15)}
 .segmented button{border:0;padding:12px 18px;background:transparent;font-weight:900;color:#7e3a54;cursor:pointer;font-size:15px}
 .segmented button.active{background:linear-gradient(135deg,var(--rose-300),var(--rose-400));color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
-/* grids */
 .hidden{display:none}
 .grid-3, .grid-2 {display: grid; gap: 8px; grid-template-columns: 1fr;}
 @media (min-width: 480px) {
     .grid-3 { grid-template-columns: 1.2fr 1fr .8fr; }
     .grid-2 { grid-template-columns: 1fr 1fr; }
 }
-/* instagram CTA (seção) */
 .ig-card{background:#fff;border:1px solid #f4d6df;border-radius:18px;padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
 .ig-card:after{content:"";position:absolute;inset:auto 12% 0 12%;height:2px;background:linear-gradient(90deg,var(--gold-300),var(--gold-500))}
 .ig-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .ig-badge{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,#ffeaf2,#ffd6e6);border:1px solid #f4cbd7}
 .ig-badge svg{width:20px;height:20px;fill:#7e3a54}
-/* barra fixa */
 .mobile-bar{position:sticky;bottom:0;z-index:50;background:#fff;border-top:1px solid #f3d9e4}
 .mobile-bar .wrap{max-width:940px;margin:0 auto;padding:10px 16px;display:flex;gap:10px;align-items:center;justify-content:space-between}
 .mobile-bar .subtotal{font-weight:800;color:#5a3a3a}
-
-/* Linha do selo + botão Instagram (ajustada) */
 .pill-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:nowrap}
 .ig-link{ display:inline-flex;align-items:center;gap:8px; padding:8px 12px;border-radius:999px;border:1.5px solid #f4cbd7; background:linear-gradient(135deg,#ffeaf2,#ffd6e6); color:#7e3a54;text-decoration:none;font-weight:900;font-size:13px; box-shadow:0 6px 14px rgba(231,161,189,.18); }
 .ig-link:hover{transform:translateY(-1px)}
 .ig-link svg{width:16px;height:16px;fill:#7e3a54}
-
-/* Estilos de formulário base (consolidados) */
 .f-label{display:flex;align-items:center;gap:8px;margin:12px 0 6px;font-weight:800;color:#4b2e2e}
 .ficon{width:28px;height:28px;border-radius:8px;display:grid;place-items:center; background:linear-gradient(135deg,#ffeaf2,#ffd6e6);border:1px solid #f4cbd7;font-size:16px}
 .drawer .form-input{width:100%;padding:12px;border:1.5px solid #f1c9d8;border-radius:12px; font:inherit;color:#4b2e2e;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.05)}
 .drawer .form-input:focus{border-color:var(--rose-300);box-shadow:0 0 0 3px rgba(244,167,197,.25);outline:none}
-
-/* Padronização de Fontes no Carrinho */
 .drawer .drawer-title { font-size: 20px; }
 .drawer h3 { font-size: 16px; font-weight: 800; color: var(--choco); margin: 20px 0 10px; }
 .drawer .f-label span { font-size: 15px; font-weight: 700; }
 .drawer .muted { font-size: 13px; line-height: 1.4; }
 .drawer .form-input, .drawer .form-input::placeholder { font-size: 15px; font-weight: 500; }
-
-/* Estilo dos selects */
 select, input[type="date"], input[type="time"] { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%237e3a54' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-color: #fff; padding-right: 36px !important; border: 1.5px solid #f1c9d8; border-radius: 12px; font: inherit; color: #4b2e2e; font-size: 15px; font-weight: 500; width: 100%; padding: 12px; }
 select:focus, input[type="date"]:focus, input[type="time"]:focus { outline: none; border-color: var(--rose-300); box-shadow: 0 0 0 3px rgba(244, 167, 197, .25); }
-
-/* Animação de transição Retirada/Entrega */
 .delivery-box-container { display: grid; transition: grid-template-rows 0.35s ease-in-out; grid-template-rows: 0fr; }
 .delivery-box-container.visible { grid-template-rows: 1fr; }
 .delivery-box { overflow: hidden; }
-
-/* Destaque da regra de 24h */
 .notice-box { background: var(--rose-50); border: 1px solid var(--rose-200); border-radius: 12px; padding: 10px; margin: 8px 0; display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink); }
 .notice-box svg { width: 20px; height: 20px; fill: var(--rose-400); flex-shrink: 0; }
-
-/* Validação visual de campos */
 .invalid-field{ border-color:#e53e3e !important; animation:shake .4s ease-in-out; }
 @keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
-
-/* Animação do ícone do carrinho */
 .cart-badge.jiggle{ animation:jiggle .5s ease; }
 @keyframes jiggle{ 0%,100%{transform:scale(1)} 25%{transform:scale(1.15) rotate(5deg)} 75%{transform:scale(0.9) rotate(-5deg)} }
-
-/* Indicador de carregamento do CEP */
 .cep-wrap{position:relative;display:flex;align-items:center}
 .cep-spinner{ position:absolute; right:12px; width:18px; height:18px; border:2px solid var(--rose-200); border-top-color:var(--rose-400); border-radius:50%; animation:spin .8s linear infinite; opacity:0; visibility:hidden; transition:opacity .2s, visibility .2s; }
 .cep-spinner.loading{opacity:1; visibility:visible}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* Modal de alerta customizado */
 .modal-overlay{ position:fixed; inset:0; background:rgba(75,46,46,.4); backdrop-filter:blur(4px); z-index:100; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .25s ease; }
 .modal-overlay.show{opacity:1; pointer-events:auto}
 .modal-box{ background:#fff; padding:24px; border-radius:var(--radius); box-shadow:0 20px 40px rgba(0,0,0,.2); width:min(400px, 90%); text-align:center; transform:scale(.95); transition:transform .25s ease; }
 .modal-overlay.show .modal-box{transform:scale(1)}
 .modal-icon{font-size:32px; margin-bottom:10px}
 .modal-text{color:var(--ink); font-size:16px; margin:0 0 20px}
-
-/* Rodapé do carrinho visível no mobile */
 .drawer-footer {
     padding: 14px;
     border-top: 1px solid #f3d9e4;
     background: #fff;
     display: grid;
     gap: 10px;
-    flex-shrink: 0; /* Garante que o rodapé não seja espremido */
+    flex-shrink: 0;
 }
 </style>
 </head>
@@ -681,8 +636,11 @@ if(cepInput){
     try{
       const r=await fetch(`https://viacep.com.br/ws/${dig}/json/`); 
       const d=await r.json();
-      // CORREÇÃO DO ERRO DE DIGITAÇÃO: logouro -> logradouro
-      if(d && !d.erro){ if(!ruaInput.value)ruaInput.value=d.logradouro||''; if(!bairroInput.value)bairroInput.value=d.bairro||''; numeroInput.focus();}
+      if(d && !d.erro){ 
+        if(!ruaInput.value)ruaInput.value=d.logradouro||''; 
+        if(!bairroInput.value)bairroInput.value=d.bairro||'';
+        numeroInput.focus();
+      }
     }catch(e){}
     finally { cepSpinner.classList.remove('loading'); }
   }
@@ -690,8 +648,7 @@ if(cepInput){
   cepInput.addEventListener('keyup',()=>{if(onlyDigits(cepInput.value).length===8) lookup();});
 }
 
-// O botão de diagnóstico foi removido pois não é mais necessário
-// document.getElementById('testFunctionBtn').onclick = ...
+// O botão de teste foi removido pois não é mais necessário
 
 document.getElementById('calculateFeeBtn').onclick = async () => {
     const street = ruaInput.value.trim();
@@ -699,6 +656,7 @@ document.getElementById('calculateFeeBtn').onclick = async () => {
     const neighborhood = bairroInput.value.trim();
     const cep = cepInput.value.trim();
 
+    // Apenas Rua, Número e Bairro são obrigatórios para o CÁLCULO
     if (!street || !number || !neighborhood) {
         showModal('Por favor, preencha Rua, Número e Bairro para calcular o frete.');
         return;
@@ -718,11 +676,9 @@ document.getElementById('calculateFeeBtn').onclick = async () => {
         const data = await response.json();
 
         if (!response.ok) {
-            // Se o erro vier da nossa função, ele terá a propriedade 'error'
             throw new Error(data.error || 'Ocorreu um erro desconhecido.');
         }
         
-        // CORREÇÃO DO ERRO DE PREÇO: data.price -> data.cost
         let preco = data.cost;
         if(preco > 100) {
             preco = preco / 100;
@@ -785,46 +741,52 @@ document.getElementById('checkoutBtn').onclick=()=>{
   }
   const lines=[];
   const subtotal = sum();
-  // Corrigido para garantir que a taxa de entrega seja um número
   const finalDeliveryFee = typeof deliveryFee === 'number' ? deliveryFee : 0;
   const grandTotal = subtotal + finalDeliveryFee;
 
-  lines.push('🥰 Oiii, que alegria ver seu pedido concluído!');
-  lines.push('Vou confirmar aqui com você o que escolheu, pode conferir junto comigo? 👇','');
-  lines.push(`🌸 *Pedido para:* ${nome}`,'',`*Itens:*`);
+  // --- MENSAGEM DO WHATSAPP CORRIGIDA ---
+  lines.push('Olá, La Doçura! Gostaria de fazer o seguinte pedido:','');
+  lines.push(`*Resumo do Pedido*`);
+  lines.push(`📝 *Pedido para:* ${nome}`,'');
+  lines.push(`🛍️ *Itens:*`);
   cart.forEach((it,i)=>{
     const tot=it.price*it.count;
     const tema=it.tema?` • Tema: ${it.tema}`:"";
-    lines.push(`*${i+1})* ${it.title} • Sabor: ${it.flavor} • Pacote: ${it.pack} un • Qtd: ${it.count} • Total: ${moneyBR(tot)}${tema}`,'');
+    lines.push(`*${i+1})* ${it.title} (${it.flavor}, ${it.pack} un) - ${it.count}x = ${moneyBR(tot)}${tema}`);
   });
-  lines.push(`📌 *Subtotal:* ${moneyBR(subtotal)}`);
+  lines.push('');
+  lines.push(`*Valores:*`);
+  lines.push(`- Subtotal: ${moneyBR(subtotal)}`);
   if(mode === 'entrega'){
-    lines.push(`🛵 *Taxa de Entrega:* ${moneyBR(finalDeliveryFee)}`);
-    lines.push(`💰 *Total Geral:* ${moneyBR(grandTotal)}`);
+    lines.push(`- Taxa de Entrega: ${moneyBR(finalDeliveryFee)}`);
+    lines.push(`- *Total Geral:* ${moneyBR(grandTotal)}`);
   }
-  lines.push(`📅 *Data/Horário:* ${formatBR(chosenDateTime)} às ${timeValue}`);
+  lines.push('');
+  lines.push(`*Detalhes da Entrega/Retirada:*`);
+  lines.push(`📅 *Data e Horário:* ${formatBR(chosenDateTime)} às ${timeValue}`);
+
   if(mode==='retirada'){
-    lines.push(`🚶‍♀️ *Modalidade:* Retirada no local`);
-    // ENDEREÇO CORRIGIDO
-    lines.push(`🏡 *Nosso endereço:* Rua José Faid, 800 — Jardim Santana`);
-    lines.push(`Você pode usar o mapa para chegar aqui sem erro: ${MAP_LINK} 📍`);
+    lines.push(`🚶‍♀️ *Modalidade:* Retirada no local.`);
   }else{
     const rua=(document.getElementById('rua').value||'').trim();
     const bairro=(document.getElementById('bairro').value||'').trim();
     const numero=(document.getElementById('numero').value||'').trim();
     const cep=(document.getElementById('cep').value||'').trim();
     const ref=(document.getElementById('ref').value||'').trim();
-    lines.push(`🚚 *Modalidade:* Entrega`);
-    lines.push(`🏡 *Endereço:* ${rua}, Nº ${numero}, Bairro ${bairro}`);
-    lines.push(`📍 *Cidade/UF:* Porto Velho/RO`);
-    if(cep) lines.push(`🔢 *CEP:* ${cep}`);
-    if(ref) lines.push(`🧭 *Referência:* ${ref}`);
+    lines.push(`🚚 *Modalidade:* Entrega.`);
+    lines.push(`📍 *Endereço:* ${rua}, Nº ${numero}, Bairro ${bairro}.`);
+    if(cep) lines.push(`- CEP: ${cep}`);
+    if(ref) lines.push(`- Referência: ${ref}`);
   }
-  const obs=(document.getElementById('obs').value||'').trim(); if(obs) lines.push(`📝 *Observações:* ${obs}`);
-  lines.push('','💖 Muito obrigada por confiar na *La Doçura*!');
-  lines.push('Vamos preparar tudo com todo carinho do mundo.');
-  lines.push('Tem mais algum detalhe que gostaria de acrescentar? 🌷');
-  const url=`https://wa.me/${PHONE}?text=${encodeURIComponent(lines.join('\n'))}`; window.open(url,'_blank');
+  const obs=(document.getElementById('obs').value||'').trim(); 
+  if(obs) {
+      lines.push('');
+      lines.push(`*Observações:* ${obs}`);
+  }
+  lines.push('','Aguardo a confirmação e as informações para pagamento. Obrigado(a)!');
+  
+  const url=`https://wa.me/${PHONE}?text=${encodeURIComponent(lines.join('\n'))}`; 
+  window.open(url,'_blank');
 };
 document.getElementById('y').textContent=new Date().getFullYear();
 document.getElementById('openCart').addEventListener('click',openDrawer);
@@ -832,15 +794,3 @@ document.getElementById('viewCartBtn').addEventListener('click',openDrawer);
 </script>
 </body>
 </html>
-
-```json
-{
-  "cost": 1500,
-  "distance": 10.8,
-  "duration": "21 minutos",
-  "durationInfo": {
-    "seconds": 1260,
-    "duration": "21 minutos"
-  },
-  "return": false
-}
