@@ -35,16 +35,50 @@
     <script>
         const form = document.getElementById('frete-form');
         const resultadoDiv = document.getElementById('resultado');
+        const cepInput = document.getElementById('cep');
+        const streetInput = document.getElementById('street');
+        const numberInput = document.getElementById('number');
+        const neighborhoodInput = document.getElementById('neighborhood');
 
+        // --- NOVA LÓGICA DE BUSCA AUTOMÁTICA DE CEP ---
+        cepInput.addEventListener('blur', async () => {
+            let cep = cepInput.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+            if (cep.length === 8) {
+                resultadoDiv.textContent = 'Buscando endereço...';
+                resultadoDiv.style.color = 'orange';
+
+                try {
+                    const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                    const data = await response.json();
+
+                    if (data.erro) {
+                        throw new Error('CEP não encontrado.');
+                    }
+
+                    streetInput.value = data.logradouro;
+                    neighborhoodInput.value = data.bairro;
+                    resultadoDiv.textContent = ''; // Limpa a mensagem de "Buscando..."
+                    numberInput.focus(); // Move o cursor para o campo "Número"
+
+                } catch (error) {
+                    resultadoDiv.style.color = 'red';
+                    resultadoDiv.textContent = `Erro ao buscar CEP: ${error.message}`;
+                }
+            }
+        });
+
+
+        // --- LÓGICA EXISTENTE PARA CALCULAR O FRETE ---
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
             resultadoDiv.textContent = 'Calculando...';
 
             const dadosEndereco = {
-                cep: document.getElementById('cep').value,
-                street: document.getElementById('street').value,
-                number: document.getElementById('number').value,
-                neighborhood: document.getElementById('neighborhood').value
+                cep: cepInput.value,
+                street: streetInput.value,
+                number: numberInput.value,
+                neighborhood: neighborhoodInput.value
             };
 
             try {
@@ -60,8 +94,11 @@
                     throw new Error(data.error || 'Ocorreu um erro desconhecido.');
                 }
                 
-                // --- PREÇO SENDO MOSTRADO CORRETAMENTE ---
-                const preco = data.cost / 100;
+                let preco = data.cost;
+                if (preco > 100) {
+                    preco = preco / 100;
+                }
+
                 resultadoDiv.style.color = 'green';
                 resultadoDiv.textContent = `Valor do frete: R$ ${preco.toFixed(2).replace('.', ',')}`;
 
