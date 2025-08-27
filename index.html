@@ -64,11 +64,10 @@
                 const data = await response.json();
 
                 if (!response.ok) {
-                    // Se o erro vier da nossa função, ele terá a propriedade 'error'
                     throw new Error(data.error || 'Ocorreu um erro desconhecido.');
                 }
                 
-                // Se a chamada for um SUCESSO, mostramos a resposta completa
+                // Se a chamada for um SUCESSO, mostramos a resposta completa para descobrirmos o nome do campo do preço
                 resultadoDiv.style.color = 'green';
                 resultadoDiv.textContent = `SUCESSO! Resposta da API: ${JSON.stringify(data)}`;
 
