@@ -1,11 +1,10 @@
-// VERSÃO FINAL - Baseada no exemplo funcional do desenvolvedor
+// VERSÃO FINAL - Corrigindo o "C" maiúsculo em "driverCategory" para "c" minúsculo
 
 exports.handler = async function(event) {
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Method Not Allowed' };
     }
 
-    // Os dados vêm separados do formulário
     const { category, street, number, neighborhood } = JSON.parse(event.body);
 
     const clientId = process.env.JUMA_CLIENT_ID;
@@ -16,7 +15,6 @@ exports.handler = async function(event) {
     }
 
     try {
-        // ETAPA 1: OBTER O BEARER TOKEN (Funcionando)
         const tokenResponse = await fetch('https://api.dev.jumaentregas.com.br/auth/token', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -25,22 +23,20 @@ exports.handler = async function(event) {
         const tokenData = await tokenResponse.json();
         if (!tokenResponse.ok) throw new Error('Falha na autenticação com a Juma.');
         const accessToken = tokenData.token;
-
-        // ETAPA 2: CALCULAR O FRETE COM O NOVO FORMATO
         
-        // --- A ESTRUTURA FINAL E CORRETA ESTÁ AQUI ---
+        // --- A CORREÇÃO FINAL ESTÁ AQUI ---
         const requestBody = {
-            "driverCategory": parseInt(category, 10),
+            "drivercategory": parseInt(category, 10), // Corrigido para "c" minúsculo
             "address": {
                 "street": street,
                 "number": number,
                 "neighborhood": neighborhood,
-                "city": "Porto Velho", // A cidade é fixa
-                "state": "RO"         // O estado é fixo
+                "city": "Porto Velho",
+                "state": "RO"
             },
-            "latitude": 0,    // Usando o atalho "manda 0"
-            "longitude": 0,   // Usando o atalho "manda 0"
-            "return": false   // Campo do exemplo dele
+            "latitude": 0,
+            "longitude": 0,
+            "return": false
         };
         
         const freteResponse = await fetch('https://api.dev.jumaentregas.com.br/destinations', {
@@ -59,7 +55,6 @@ exports.handler = async function(event) {
             throw new Error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
         }
         
-        // SUCESSO!
         return {
             statusCode: 200,
             body: JSON.stringify(freteData)
