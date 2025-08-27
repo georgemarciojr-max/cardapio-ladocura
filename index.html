@@ -15,8 +15,8 @@
     <h1>Calcular Frete</h1>
     <p>A entrega é feita por Motoboy (Padrão).</p>
     <form id="frete-form">
-        <label for="cep">CEP:</label>
-        <input type="text" id="cep" required>
+        <label for="cep">CEP (Opcional):</label>
+        <input type="text" id="cep">
 
         <label for="street">Rua/Avenida:</label>
         <input type="text" id="street" required>
@@ -40,27 +40,20 @@
         const numberInput = document.getElementById('number');
         const neighborhoodInput = document.getElementById('neighborhood');
 
-        // --- NOVA LÓGICA DE BUSCA AUTOMÁTICA DE CEP ---
         cepInput.addEventListener('blur', async () => {
-            let cep = cepInput.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+            let cep = cepInput.value.replace(/\D/g, '');
 
             if (cep.length === 8) {
                 resultadoDiv.textContent = 'Buscando endereço...';
                 resultadoDiv.style.color = 'orange';
-
                 try {
                     const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
                     const data = await response.json();
-
-                    if (data.erro) {
-                        throw new Error('CEP não encontrado.');
-                    }
-
+                    if (data.erro) throw new Error('CEP não encontrado.');
                     streetInput.value = data.logradouro;
                     neighborhoodInput.value = data.bairro;
-                    resultadoDiv.textContent = ''; // Limpa a mensagem de "Buscando..."
-                    numberInput.focus(); // Move o cursor para o campo "Número"
-
+                    resultadoDiv.textContent = '';
+                    numberInput.focus();
                 } catch (error) {
                     resultadoDiv.style.color = 'red';
                     resultadoDiv.textContent = `Erro ao buscar CEP: ${error.message}`;
@@ -68,8 +61,6 @@
             }
         });
 
-
-        // --- LÓGICA EXISTENTE PARA CALCULAR O FRETE ---
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
             resultadoDiv.textContent = 'Calculando...';
@@ -89,10 +80,7 @@
                 });
 
                 const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Ocorreu um erro desconhecido.');
-                }
+                if (!response.ok) throw new Error(data.error || 'Ocorreu um erro desconhecido.');
                 
                 let preco = data.cost;
                 if (preco > 100) {
