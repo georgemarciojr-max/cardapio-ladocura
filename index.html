@@ -72,7 +72,7 @@ a{color:inherit; text-decoration:none;} .container{max-width:960px;margin:0 auto
 .item-extras{font-size:13px;color:#7c6a6a;margin:4px 0 0;padding-left:14px;border-left:2px solid #f3d9e4}
 .qty-col{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .qty-ctl{display:inline-flex;align-items:center;gap:6px}
-.qty-ctl button{width:30px;height:30px;border-radius:8px;border:1px solid #f1c9d8;background:#fff;cursor:pointer;font-weight:800;color:#7e3a54}
+.qty-ctl button{width:30px;height:30px;border-radius:8px;border:1px solid #f1c9d8;background:#fff;cursor:pointer;font-weight:800;color:#7e3a5a}
 .rmv{background:#fff;border:1px solid #f4cbd7;border-radius:999px;padding:8px 12px;cursor:pointer;font-weight:800;color:#7e3a54}
 .total-line{display:flex; justify-content: space-between; font-size: 16px; margin: 8px 0;}
 .total-line.grand-total { font-size: 18px; font-weight: 900; color: var(--choco); }
@@ -81,8 +81,8 @@ a{color:inherit; text-decoration:none;} .container{max-width:960px;margin:0 auto
 .mobile-bar .subtotal{font-weight:800;color:#5a3a5a}
 .modal-overlay{ position:fixed; inset:0; background:rgba(75,46,46,.4); backdrop-filter:blur(4px); z-index:100; display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none; transition:opacity .25s ease; }
 .modal-overlay.show{opacity:1; pointer-events:auto}
-.modal-box{ background:#fff; padding-top:16px; border-radius:var(--radius) var(--radius) 0 0; box-shadow:0 -10px 40px rgba(0,0,0,.2); width:min(500px, 100%); transform:translateY(100%); transition:transform .3s ease, opacity .3s ease; max-height:90vh; display:flex; flex-direction:column;}
-.modal-overlay.show .modal-box{transform:translateY(0)}
+#productModal .modal-box{ background:#fff; padding-top:16px; border-radius:var(--radius) var(--radius) 0 0; box-shadow:0 -10px 40px rgba(0,0,0,.2); width:min(500px, 100%); transform:translateY(100%); transition:transform .3s ease, opacity .3s ease; max-height:90vh; display:flex; flex-direction:column;}
+#productModal.show .modal-box{transform:translateY(0)}
 .modal-box.is-dragging{transition:none;}
 .modal-drag-area{position:relative; flex-shrink:0; touch-action:none;}
 .modal-drag-area:before{content:''; position:absolute; top:-8px; left:50%; transform:translateX(-50%); width:40px; height:4px; background:#e0e0e0; border-radius:2px;}
@@ -120,6 +120,17 @@ a{color:inherit; text-decoration:none;} .container{max-width:960px;margin:0 auto
 @keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
 .address-grid { display: grid; gap: 8px; grid-template-columns: 1fr; }
 @media (min-width: 480px) { .address-grid { grid-template-columns: 1.2fr 1fr .8fr; } }
+.segmented button{border:0;padding:12px 18px;background:#fff;font-weight:900;color:#7e3a54;cursor:pointer;font-size:15px}
+.segmented button.active{background:linear-gradient(135deg,var(--rose-300),var(--rose-400));color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.testimonial-card{background:#fff;border:1px solid var(--rose-200);padding:16px;border-radius:var(--radius);box-shadow:var(--shadow)}
+.stars{color:var(--rose-300);font-size:20px;letter-spacing:1px}
+.testimonial-card p{margin:8px 0;color:var(--ink)}
+.testimonial-card footer{font-weight:700;color:var(--choco)}
+#noticeModal.modal-overlay{align-items:center; z-index: 110;}
+#noticeModal .modal-box{background: #fff; box-shadow: var(--shadow); padding:24px;border-radius:var(--radius);width:min(400px, 90%);transform:scale(.95);max-height:80vh; text-align:center;}
+#noticeModal.show .modal-box{transform:scale(1)}
+#noticeModal .modal-icon{font-size:32px; margin-bottom:10px;}
+#noticeModal .modal-text{color:var(--ink); font-size:16px; margin:0 0 20px;}
 </style>
 </head>
 <body>
@@ -157,6 +168,37 @@ a{color:inherit; text-decoration:none;} .container{max-width:960px;margin:0 auto
       <div class="stack" id="menuStack"></div>
     </div>
   </section>
+
+  <section id="testimonials" class="section">
+    <div class="container">
+        <h2 class="section-title">O que dizem <span class="pink">por aí</span></h2>
+        <div class="stack">
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p>"Entrega pontual e doces maravilhosos!"</p>
+                <footer>— Ana P.</footer>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p>"As lembrancinhas de brownie foram sucesso!"</p>
+                <footer>— Marcelo R.</footer>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p>"Atendimento carinhoso e apresentação impecável."</p>
+                <footer>— Júlia S.</footer>
+            </div>
+        </div>
+    </div>
+  </section>
+
+  <section id="instagram" class="section">
+    <div class="container">
+        <h2 class="section-title" style="margin-bottom: 16px;">Acompanhe no <span class="pink">Instagram</span></h2>
+        <script src="https://cdn.lightwidget.com/widgets/lightwidget.js"></script>
+        <iframe src="//lightwidget.com/widgets/ed5b884a022f56e1b173db2d3e2cf46d.html" scrolling="no" allowtransparency="true" class="lightwidget-widget" style="width:100%;border:0;overflow:hidden;"></iframe>
+    </div>
+  </section>
 </main>
 
 <div class="mobile-bar">
@@ -179,9 +221,8 @@ a{color:inherit; text-decoration:none;} .container{max-width:960px;margin:0 auto
     <button class="drawer-close" id="closeTop" aria-label="Fechar carrinho">✖</button>
   </div>
 
-  <div class="drawer-body">
+  <div class="drawer-body" id="drawer-body">
     <div id="cartItems"></div>
-
     <div class="cart-summary">
       <div id="totals-section">
         <div class="total-line">
@@ -203,7 +244,7 @@ a{color:inherit; text-decoration:none;} .container{max-width:960px;margin:0 auto
       </div>
       
       <div class="coupon-area">
-        <label for="couponInput" class="f-label"><span class="ficon">🎟️</span><span>Tem um cupom?</span></label>
+        <label for="couponInput" class="f-label"><span>🎟️</span><span>Tem um cupom?</span></label>
         <div class="coupon-input-wrap">
             <input type="text" id="couponInput" class="form-input" placeholder="Digite seu cupom">
             <button type="button" class="btn btn-outline" id="applyCouponBtn">Aplicar</button>
@@ -215,8 +256,8 @@ a{color:inherit; text-decoration:none;} .container{max-width:960px;margin:0 auto
 
       <h3>🚚 Entrega ou Retirada</h3>
       <div class="segmented" role="tablist" aria-label="Modalidade" style="display:inline-flex;border:2px solid #f0b8cf;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 6px 16px rgba(231,161,189,.15)">
-        <button type="button" data-mode="retirada" class="active" aria-selected="true" style="border:0;padding:12px 18px;background:transparent;font-weight:900;color:#7e3a54;cursor:pointer;font-size:15px">Retirada</button>
-        <button type="button" data-mode="entrega" aria-selected="false" style="border:0;padding:12px 18px;background:transparent;font-weight:900;color:#7e3a54;cursor:pointer;font-size:15px">Entrega</button>
+        <button type="button" data-mode="retirada" class="active" aria-selected="true">Retirada</button>
+        <button type="button" data-mode="entrega" aria-selected="false">Entrega</button>
       </div>
 
       <div class="delivery-box-container" data-mode-box="retirada" style="display: grid; transition: grid-template-rows 0.35s ease-in-out; grid-template-rows: 1fr;">
@@ -224,7 +265,7 @@ a{color:inherit; text-decoration:none;} .container{max-width:960px;margin:0 auto
           <p class="muted" style="margin-top:12px"><strong>Local:</strong> Rua José Faid, 800 — Jardim Santana, Porto Velho/RO</p>
           <a href="https://maps.app.goo.gl/iNEEjprE68qSqhhd9" target="_blank" rel="noopener" class="btn btn-outline" style="gap:8px">📍 Abrir no Google Maps</a>
           <div style="height:8px"></div>
-          <label for="nomeRetirada" class="f-label"><span class="ficon">📝</span><span>Nome para retirada *</span></label>
+          <label for="nomeRetirada" class="f-label"><span>📝</span><span>Nome para retirada *</span></label>
           <input type="text" id="nomeRetirada" class="form-input" placeholder="Ex.: Maria Silva">
         </div>
       </div>
@@ -232,32 +273,32 @@ a{color:inherit; text-decoration:none;} .container{max-width:960px;margin:0 auto
       <div class="delivery-box-container" data-mode-box="entrega" style="display: grid; transition: grid-template-rows 0.35s ease-in-out; grid-template-rows: 0fr;">
         <div class="delivery-box" style="overflow: hidden;">
           <p class="muted" style="margin-top:12px">A taxa de entrega é calculada com base na distância.</p>
-          <label for="nomeEntrega" class="f-label"><span class="ficon">📝</span><span>Nome para entrega *</span></label>
+          <label for="nomeEntrega" class="f-label"><span>📝</span><span>Nome para entrega *</span></label>
           <input type="text" id="nomeEntrega" class="form-input" placeholder="Ex.: Maria Silva">
           
           <div class="cep-wrap">
-            <label class="f-label" for="cep"><span class="ficon">📮</span><span>CEP (opcional)</span></label>
+            <label class="f-label" for="cep"><span>📮</span><span>CEP (opcional)</span></label>
             <input type="text" id="cep" class="form-input" placeholder="00000-000" inputmode="numeric" maxlength="9">
             <div class="cep-spinner" id="cepSpinner"></div>
           </div>
           
           <div class="address-grid" style="margin-top:8px">
             <div>
-              <label class="f-label" for="rua"><span class="ficon">🛣️</span><span>Rua *</span></label>
+              <label class="f-label" for="rua"><span>🛣️</span><span>Rua *</span></label>
               <input type="text" id="rua" class="form-input" placeholder="Av. Exemplo">
             </div>
             <div>
-              <label class="f-label" for="bairro"><span class="ficon">🏘️</span><span>Bairro *</span></label>
+              <label class="f-label" for="bairro"><span>🏘️</span><span>Bairro *</span></label>
               <input type="text" id="bairro" class="form-input" placeholder="Jardim Santana">
             </div>
             <div>
-              <label class="f-label" for="numero"><span class="ficon">🔢</span><span>Número *</span></label>
+              <label class="f-label" for="numero"><span>🔢</span><span>Número *</span></label>
               <input type="text" id="numero" class="form-input" placeholder="800" inputmode="numeric">
             </div>
           </div>
 
           <div>
-              <label class="f-label" for="ref"><span class="ficon">📌</span><span>Referência (opcional)</span></label>
+              <label class="f-label" for="ref"><span>📌</span><span>Referência (opcional)</span></label>
               <input type="text" id="ref" class="form-input" placeholder="Ex.: Apto, bloco, próximo à...">
           </div>
           <button type="button" class="btn" id="calculateFeeBtn" style="width:100%; margin-top: 16px;">
@@ -275,18 +316,18 @@ a{color:inherit; text-decoration:none;} .container{max-width:960px;margin:0 auto
         </div>
         <div style="display: grid; gap: 8px; grid-template-columns: 1fr 1fr; margin-top:8px">
             <div>
-                <label class="f-label" for="date"><span class="ficon">🗓️</span><span>Data</span></label>
+                <label class="f-label" for="date"><span>🗓️</span><span>Data</span></label>
                 <input type="date" id="date" class="form-input" />
             </div>
             <div>
-                <label class="f-label" for="time"><span class="ficon">⏰</span><span>Horário</span></label>
+                <label class="f-label" for="time"><span>⏰</span><span>Horário</span></label>
                 <input type="time" id="time" class="form-input" />
             </div>
         </div>
       </div>
 
       <div style="margin-top:10px">
-        <label class="f-label" for="obs"><span class="ficon">✍️</span><span>Observações (opcional)</span></label>
+        <label class="f-label" for="obs"><span>✍️</span><span>Observações (opcional)</span></label>
         <textarea id="obs" class="form-input" rows="2" placeholder="Ex.: Aniversário, preferências..."></textarea>
       </div>
     </div>
@@ -316,6 +357,14 @@ a{color:inherit; text-decoration:none;} .container{max-width:960px;margin:0 auto
   </div>
 </div>
 
+<div class="modal-overlay" id="noticeModal">
+    <div class="modal-box">
+        <div class="modal-icon" id="noticeIcon">🌸</div>
+        <p class="modal-text" id="noticeText"></p>
+        <button class="btn" id="noticeCloseBtn">Entendi!</button>
+    </div>
+</div>
+
 <script>
 // --- 1. CONFIG & STATE ---
 const PHONE="556992702283";
@@ -327,15 +376,32 @@ const MENU = {
     description: "Feito com leite condensado de qualidade, manteiga e cacau em pó, enrolado no mais puro granulado de chocolate.",
     quantities: ['50', '100'],
     flavors: { Chocolate: { '50': 45, '100': 80 }, Morango: { '50': 40, '100': 70 }, Beijinho: { '50': 40, '100': 70 }, 'Leite Ninho': { '50': 40, '100': 70 } },
-    mods: [ { id: 'granulado_belga', label: 'Granulado Belga', price: 5 }, { id: 'caixa_presente_trad', label: 'Caixa para Presente', price: 8 } ]
+    mods: []
   },
   gourmet: {
     title: 'Brigadeiros Gourmet',
     image: 'https://i.imgur.com/PGPaYnR.jpeg',
-    description: "Uma deliciosa opção com produtos selecionados e decorações únicas que encantam no sabor e no visual. Vale a pena experimentar!",
+    description: "Uma deliciosa opção com produtos selecionados e decorações únicas que encantam no sabor e no visual.",
     quantities: ['50', '100'],
-    flavors: { 'Prestígio': { '50': 85, '100': 170 }, 'Dois Amores': { '50': 85, '100': 170 }, 'Paçoca': { '50': 85, '100': 170 }, 'Ferrero Rocher': { '50': 85, '100': 170 }, 'Leite Ninho com Nutella': { '50': 85, '100': 170 } },
-    mods: [ { id: 'nutella_extra', label: 'Nutella Extra', price: 10 }, { id: 'caixa_presente_gourmet', label: 'Caixa para Presente Luxo', price: 12 } ]
+    flavors: { 
+        'Prestígio': { '50': 85, '100': 170 }, 
+        'Dois Amores': { '50': 85, '100': 170 }, 
+        'Paçoca': { '50': 85, '100': 170 }, 
+        'Ferrero Rocher': { '50': 85, '100': 170 }, 
+        'Leite Ninho com Nutella': { '50': 85, '100': 170 },
+        'Churros': { '50': 85, '100': 170 },
+        'Limão': { '50': 85, '100': 170, excludeMods: ['roseta_nutella', 'roseta_brigadeiro'] },
+        'Morango com Geleia': { '50': 90, '100': 180 },
+        'Pistache': { '50': 95, '100': 190 },
+        'Romeu e Julieta': { '50': 90, '100': 180 },
+        'Cupuaçu': { '50': 90, '100': 180 }
+    },
+    mods: [ 
+        { id: 'mnm', label: 'M&M', prices: {'50': 5, '100': 10} }, 
+        { id: 'roseta_nutella', label: 'Roseta de Nutella', prices: {'50': 9, '100': 18} },
+        { id: 'roseta_brigadeiro', label: 'Roseta de Brigadeiro', prices: {'50': 6, '100': 12} },
+        { id: 'bolacha_oreo', label: 'Bolacha Oreo', prices: {'50': 5, '100': 10} }
+    ]
   },
   personalizados: {
     title: 'Brigadeiros Personalizados',
@@ -352,7 +418,7 @@ const MENU = {
     description: "Uma explosão de sabor! Feita com chocolate de qualidade e recheada com uma grande opção de sabores super saborosos.",
     quantities: ['10', '50'],
     flavors: { 'Maracujá': { '10': 60, '50': 300 }, 'Paçoca': { '10': 60, '50': 300 }, 'Doce de Leite': { '10': 60, '50': 300 } },
-    mods: [ { id: 'tag_personalizada', label: 'Tag com Nome/Data', price: 8 } ]
+    mods: []
   },
   minibrownie: {
     title: 'Mini Brownie',
@@ -360,6 +426,32 @@ const MENU = {
     description: "Deliciosamente macios, preparados com chocolate premium e um toque especial. Perfeitos para deixar sua festa mais linda e saborosa.",
     quantities: ['50', '100'],
     flavors: { 'Chocolate': { '50': 110, '100': 219 }, 'Maracujá': { '50': 110, '100': 210 }, 'Leite Ninho': { '50': 110, '100': 210 } },
+    mods: []
+  },
+  cupcake_tradicional: {
+    title: 'Cupcake Tradicional',
+    image: 'https://i.imgur.com/3AYf1Zd.jpeg',
+    description: "A massa perfeita para um bolinho clássico e delicioso. Escolha sua preferida.",
+    quantities: ['10', '25'],
+    flavors: { 'Massa Branca': { '10': 40, '25': 87 }, 'Massa Chocolate': { '10': 40, '25': 87 } },
+    mods: []
+  },
+  cupcake_recheado: {
+    title: 'Cupcake Recheado',
+    image: 'https://i.imgur.com/3AYf1Zd.jpeg',
+    description: "Escolha a combinação de massa e recheio para criar seu cupcake dos sonhos.",
+    quantities: ['10', '25'],
+    flavors: { 'Brigadeiro ao Leite': { '10': 50, '25': 112 }, 'Brigadeiro de Leite Ninho': { '10': 50, '25': 112 } },
+    options: [{ key: 'massa', label: 'Massa', values: ['Branca', 'Chocolate'] }],
+    mods: []
+  },
+  minidonuts: {
+    title: 'Mini Donuts',
+    image: 'https://i.imgur.com/1mksuiB.jpeg',
+    description: "Fofinhos, deliciosos e personalizados com o tema da sua festa.",
+    quantities: ['10', '25'],
+    flavors: { 'Homer (rosa com granulado)': { '10': 35, '25': 75 }, 'Chocolate ao Leite': { '10': 35, '25': 75 }, 'Açúcar e Canela': { '10': 35, '25': 75 } },
+    extra: 'tema',
     mods: []
   },
   colher: {
@@ -384,7 +476,8 @@ let additions=0;
 let deliveryFee = 0;
 let appliedCoupon = null;
 let discountAmount = 0;
-const CART_KEY='ladocura_cart_v2';
+const CART_KEY='ladocura_cart_v5_final';
+let currentProductKey = null;
 
 // --- 2. ELEMENT SELECTORS ---
 const menuStack = document.getElementById('menuStack');
@@ -413,27 +506,31 @@ const numeroInput = document.getElementById('numero');
 const cepSpinner = document.getElementById('cepSpinner');
 const couponInput = document.getElementById('couponInput');
 const couponMessageEl = document.getElementById('couponMessage');
+const noticeModal = document.getElementById('noticeModal');
+const noticeText = document.getElementById('noticeText');
+const noticeIcon = document.getElementById('noticeIcon');
 
 // --- 3. HELPER FUNCTIONS ---
 const moneyBR=v=>`R$ ${v.toFixed(2).replace('.',',')}`;
 const onlyDigits=s=>(s||'').replace(/\D+/g,''); 
 const pad2=n=>String(n).padStart(2,'0');
 const toLocalInputValue=d=>`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-const formatBR=d=>`${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()}`;
+const formatBR=d=>`${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
 
 function showModal(text, icon='🌸'){
-  alert(`${icon} ${text.replace(/<br>/g, '\n').replace(/<strong>|<\/strong>/g, '')}`);
+    noticeText.innerHTML = text;
+    noticeIcon.textContent = icon;
+    noticeModal.classList.add('show');
 }
 
 // --- 4. CORE APPLICATION LOGIC ---
-// (Funções de UI: renderMenu, setupFilters, openProductModal, etc.)
 function renderMenu() {
   menuStack.innerHTML = '';
   Object.entries(MENU).forEach(([key, cfg]) => {
     const card = document.createElement('div');
     card.className = 'card';
     card.dataset.key = key;
-    const minPrice = Math.min(...Object.values(cfg.flavors).flatMap(q => Object.values(q)));
+    const minPrice = Math.min(...Object.values(cfg.flavors).flatMap(priceObj => Object.values(priceObj).filter(val => typeof val === 'number')));
     card.innerHTML = `
       <div class="card-img"><img src="${cfg.image}" alt="${cfg.title}" loading="lazy"></div>
       <div class="card-body">
@@ -448,33 +545,42 @@ function renderMenu() {
 }
 
 function setupFilters() {
-  chipsEl.innerHTML = '<button type="button" class="active" data-filter="all">Todos</button>';
-  Object.keys(MENU).forEach(key => {
-    const b = document.createElement('button');
-    b.textContent = MENU[key].title;
-    b.dataset.filter = key;
-    chipsEl.appendChild(b);
-  });
-  chipsEl.querySelectorAll('button').forEach(b => {
-    b.onclick = (e) => {
-      e.stopPropagation();
-      const filter = b.dataset.filter;
-      chipsEl.querySelectorAll('button').forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
-      menuStack.querySelectorAll('.card').forEach(card => {
-        card.style.display = (filter === 'all' || card.dataset.key === filter) ? '' : 'none';
-      });
+    const filters = {
+        'Todos': () => true,
+        'Brigadeiros': key => ['tradicionais', 'gourmet', 'personalizados'].includes(key),
+        'Brownies': key => ['lembrancinhas', 'minibrownie'].includes(key),
+        'Bolinhos': key => ['cupcake_tradicional', 'cupcake_recheado'].includes(key),
+        'Donuts': key => ['minidonuts'].includes(key),
+        'Copinhos': key => ['copo', 'colher'].includes(key),
     };
-  });
-  document.getElementById('searchInput').addEventListener('input', e => {
-    const query = e.target.value.toLowerCase();
-    chipsEl.querySelector('[data-filter="all"]').click();
-    menuStack.querySelectorAll('.card').forEach(card => {
-        const cfg = MENU[card.dataset.key];
-        const searchText = `${cfg.title} ${cfg.description} ${Object.keys(cfg.flavors).join(' ')}`.toLowerCase();
-        card.style.display = searchText.includes(query) ? '' : 'none';
+
+    chipsEl.innerHTML = '';
+    Object.keys(filters).forEach((name, index) => {
+        const b = document.createElement('button');
+        b.textContent = name;
+        if (index === 0) b.classList.add('active');
+        chipsEl.appendChild(b);
+
+        b.onclick = (e) => {
+            e.stopPropagation();
+            const filterFn = filters[name];
+            chipsEl.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+            menuStack.querySelectorAll('.card').forEach(card => {
+                card.style.display = filterFn(card.dataset.key) ? '' : 'none';
+            });
+        };
     });
-  });
+
+    document.getElementById('searchInput').addEventListener('input', e => {
+        const query = e.target.value.toLowerCase();
+        chipsEl.querySelector('button').click();
+        menuStack.querySelectorAll('.card').forEach(card => {
+            const cfg = MENU[card.dataset.key];
+            const searchText = `${cfg.title} ${cfg.description} ${Object.keys(cfg.flavors).join(' ')}`.toLowerCase();
+            card.style.display = searchText.includes(query) ? '' : 'none';
+        });
+    });
 }
 
 function openProductModal(key) {
@@ -484,25 +590,73 @@ function openProductModal(key) {
   document.getElementById('modalTitle').textContent = cfg.title;
   document.getElementById('modalDesc').textContent = cfg.description;
   
-  let formHTML = `<div class="option-group">
-    <label>${cfg.extra === 'tema' ? 'Peso' : 'Sabor'}</label>
-    <select name="flavor" class="form-input">${Object.keys(cfg.flavors).map(f => `<option value="${f}">${f}</option>`).join('')}</select>
-  </div>
-  <div class="option-group">
-    <label>Quantidade</label>
-    <select name="qty" class="form-input">${cfg.quantities.map(q => `<option value="${q}">${q} unidades</option>`).join('')}</select>
-  </div>`;
-  if (cfg.extra === 'tema') {
-    formHTML += `<div class="option-group"><label>Tema da festa (opcional)</label><input type="text" name="tema" class="form-input" placeholder="Ex: Unicórnio, Mickey..."></div>`;
-  }
-  if (cfg.mods && cfg.mods.length > 0) {
-    formHTML += `<div class="option-group"><label>Adicionais</label>${cfg.mods.map(m => `<div class="mod-line"><label><input type="checkbox" name="mods" value="${m.id}" data-price="${m.price}"> ${m.label}</label><strong>+ ${moneyBR(m.price)}</strong></div>`).join('')}</div>`;
-  }
-  
-  modalForm.innerHTML = formHTML;
-  modalForm.onchange = () => updateModalPrice();
-  updateModalPrice();
+  buildModalForm();
   productModal.classList.add('show');
+}
+
+function buildModalForm() {
+    const cfg = MENU[currentProductKey];
+    let formHTML = '';
+
+    const flavorLabel = (cfg.title === 'Cupcake Tradicional') ? 'Massa' 
+                    : (cfg.title === 'Cupcake Recheado') ? 'Recheio' 
+                    : (cfg.extra === 'tema') ? 'Cobertura' 
+                    : 'Sabor';
+
+    formHTML += `<div class="option-group">
+        <label>${flavorLabel}</label>
+        <select name="flavor" class="form-input">${Object.keys(cfg.flavors).map(f => `<option value="${f}">${f}</option>`).join('')}</select>
+    </div>`;
+
+    if (cfg.options) {
+        cfg.options.forEach(opt => {
+            formHTML += `<div class="option-group">
+                <label>${opt.label}</label>
+                <select name="${opt.key}" class="form-input">${opt.values.map(v => `<option value="${v}">${v}</option>`).join('')}</select>
+            </div>`;
+        });
+    }
+
+    formHTML += `<div class="option-group">
+        <label>Quantidade</label>
+        <select name="qty" class="form-input">${cfg.quantities.map(q => `<option value="${q}">${q} unidades</option>`).join('')}</select>
+    </div>`;
+
+    if (cfg.extra === 'tema') {
+        formHTML += `<div class="option-group"><label>Tema da festa (obrigatório)</label><input type="text" name="tema" class="form-input" placeholder="Ex: Unicórnio, Mickey..."></div>`;
+    }
+
+    formHTML += `<div id="mods-container"></div>`;
+    
+    modalForm.innerHTML = formHTML;
+    renderMods();
+    updateModalPrice();
+}
+
+function renderMods() {
+    if (!currentProductKey) return;
+    const cfg = MENU[currentProductKey];
+    const modsContainer = document.getElementById('mods-container');
+    modsContainer.innerHTML = '';
+    
+    if (!cfg.mods || cfg.mods.length === 0) return;
+
+    const currentFlavor = modalForm.querySelector('[name="flavor"]').value;
+    const flavorData = cfg.flavors[currentFlavor];
+    const excludedMods = flavorData?.excludeMods || [];
+    const visibleMods = cfg.mods.filter(mod => !excludedMods.includes(mod.id));
+
+    if (visibleMods.length > 0) {
+        const qty = modalForm.querySelector('[name="qty"]').value;
+        const modsHTML = visibleMods.map(m => {
+            const price = m.prices[qty];
+            return `<div class="mod-line">
+                <label><input type="checkbox" name="mods" value="${m.id}"> ${m.label}</label>
+                <strong>+ ${moneyBR(price)}</strong>
+            </div>`;
+        }).join('');
+        modsContainer.innerHTML = `<div class="option-group"><label>Adicionais</label>${modsHTML}</div>`;
+    }
 }
 
 function updateModalPrice() {
@@ -511,8 +665,16 @@ function updateModalPrice() {
   const flavor = modalForm.querySelector('[name="flavor"]').value;
   const qty = modalForm.querySelector('[name="qty"]').value;
   let basePrice = cfg.flavors[flavor]?.[qty] || 0;
+  
   let modsPrice = 0;
-  modalForm.querySelectorAll('[name="mods"]:checked').forEach(mod => { modsPrice += parseFloat(mod.dataset.price); });
+  modalForm.querySelectorAll('[name="mods"]:checked').forEach(modCheckbox => {
+      const modId = modCheckbox.value;
+      const modData = cfg.mods.find(m => m.id === modId);
+      if(modData && modData.prices) {
+          modsPrice += modData.prices[qty] || 0;
+      }
+  });
+  
   modalPriceEl.textContent = moneyBR(basePrice + modsPrice);
 }
 
@@ -527,32 +689,21 @@ function closeModal() {
   }, 300);
 }
 
-// (Funções de Lógica do Carrinho - a maioria restaurada do original)
 function persist(){localStorage.setItem(CART_KEY,JSON.stringify({cart,additions,appliedCoupon}));}
 
 function load(){
-    try{
-        const raw=JSON.parse(localStorage.getItem(CART_KEY)); 
-        if(raw){
-            cart=raw.cart||[]; 
-            additions=raw.additions||0; 
-            appliedCoupon=raw.appliedCoupon||null;
-        }
-    }catch(e){
-        console.error("Failed to load cart from localStorage", e);
-    } 
+    try{ const raw=JSON.parse(localStorage.getItem(CART_KEY)); if(raw){ cart=raw.cart||[]; additions=raw.additions||0; appliedCoupon=raw.appliedCoupon||null; } }catch(e){} 
     render();
 }
 
-// Função de Adicionar ao Carrinho adaptada para os "adicionais"
 function addToCart(item) {
-  const modsTotalPrice = item.mods.reduce((sum, mod) => sum + mod.price, 0);
-  const itemIdentifier = `${item.key}-${item.flavor}-${item.pack}-${item.mods.map(m=>m.id).join('-')}-${item.tema || ''}`;
+  const itemIdentifier = `${item.key}-${item.flavor}-${item.pack}-${(item.options || []).map(o => o.value).join('-')}-${item.mods.map(m=>m.id).join('-')}-${item.tema || ''}`;
   const existingItem = cart.find(i => i.identifier === itemIdentifier);
 
   if (existingItem) {
       existingItem.count++;
   } else {
+      const modsTotalPrice = item.mods.reduce((sum, mod) => mod.prices[item.pack] + sum, 0);
       item.totalPrice = item.price + modsTotalPrice;
       item.identifier = itemIdentifier;
       item.count = 1;
@@ -566,12 +717,9 @@ function addToCart(item) {
   cartBadgeEl.classList.add('jiggle');
   setTimeout(() => cartBadgeEl.classList.remove('jiggle'), 500);
 
-  if (!drawer.classList.contains('open')) {
-    openDrawer();
-  }
+  if (!drawer.classList.contains('open')) { openDrawer(); }
 }
 
-// Renderização do Carrinho com o visual original
 function render() {
     cartItemsEl.innerHTML = '';
     if (cart.length === 0) {
@@ -579,21 +727,23 @@ function render() {
     } else {
         cart.forEach((item, idx) => {
             const lineTotal = item.totalPrice * item.count;
+            let optionsHTML = '';
+            if (item.options && item.options.length > 0) {
+                optionsHTML = item.options.map(opt => `<div class="muted">${opt.label}: <strong>${opt.value}</strong></div>`).join('');
+            }
             const modsHTML = item.mods && item.mods.length > 0
-                ? `<div class="item-extras">${item.mods.map(m => `<div>+ ${m.label} (${moneyBR(m.price)})</div>`).join('')}</div>`
+                ? `<div class="item-extras">${item.mods.map(m => `<div>+ ${m.label.split('+')[0].trim()}</div>`).join('')}</div>`
                 : '';
-
             const el = document.createElement('div');
             el.className = 'cart-item';
             el.innerHTML = `
                 <div class="item-row">
                     <div class="item-info">
                         <h4>${item.title}</h4>
-                        <div class="muted">Sabor: <strong>${item.flavor}</strong></div>
+                        <div class="muted">${(item.key === 'cupcake_tradicional' ? 'Massa' : 'Sabor/Recheio')}: <strong>${item.flavor}</strong></div>
+                        ${optionsHTML}
                         <div class="muted">Pacote: <strong>${item.pack} un</strong>${item.tema ? ` • Tema: <strong>${item.tema}</strong>` : ''}</div>
                         ${modsHTML}
-                        <div class="muted">Preço unit. (c/ adicionais): <strong>${moneyBR(item.totalPrice)}</strong></div>
-                        <div class="muted">Total do item: <strong>${moneyBR(lineTotal)}</strong></div>
                     </div>
                     <div class="qty-col">
                         <div class="qty-ctl">
@@ -601,7 +751,7 @@ function render() {
                             <span><strong>${item.count}</strong></span>
                             <button aria-label="Aumentar quantidade" data-action="inc" data-index="${idx}">+</button>
                         </div>
-                        <button class="rmv" data-action="rmv" data-index="${idx}">Remover</button>
+                        <strong>${moneyBR(lineTotal)}</strong>
                     </div>
                 </div>`;
             cartItemsEl.appendChild(el);
@@ -612,24 +762,15 @@ function render() {
         btn.onclick = () => {
             const action = btn.dataset.action;
             const index = parseInt(btn.dataset.index, 10);
-            
-            if (action === 'inc') {
-                cart[index].count++;
-            } else if (action === 'dec') {
-                cart[index].count = Math.max(1, cart[index].count - 1);
-            } else if (action === 'rmv') {
+            if (action === 'inc') { cart[index].count++; } 
+            else if (action === 'dec') { cart[index].count = Math.max(1, cart[index].count - 1); }
+            if (cart[index].count === 0 || action === 'rmv') {
                 const itemEl = btn.closest('.cart-item');
                 if (itemEl) {
                    itemEl.classList.add('removing');
-                   setTimeout(() => {
-                       cart.splice(index, 1);
-                       persist();
-                       render();
-                   }, 300);
+                   setTimeout(() => { cart.splice(index, 1); persist(); render(); }, 300);
                    return;
-                } else {
-                   cart.splice(index, 1);
-                }
+                } else { cart.splice(index, 1); }
             }
             persist();
             render();
@@ -639,11 +780,8 @@ function render() {
     const subtotal = cart.reduce((sum, item) => sum + (item.totalPrice * item.count), 0);
     discountAmount = 0;
     if (appliedCoupon) {
-        if (appliedCoupon.type === 'percentage') {
-            discountAmount = subtotal * (appliedCoupon.value / 100);
-        } else if (appliedCoupon.type === 'delivery') {
-            discountAmount = deliveryFee > 0 ? deliveryFee : 0;
-        }
+        if (appliedCoupon.type === 'percentage') { discountAmount = subtotal * (appliedCoupon.value / 100); } 
+        else if (appliedCoupon.type === 'delivery') { discountAmount = deliveryFee > 0 ? deliveryFee : 0; }
         discountLineEl.style.display = 'flex';
         discountValueEl.textContent = `-${moneyBR(discountAmount)}`;
     } else {
@@ -660,19 +798,12 @@ function render() {
 function openDrawer(){drawer.classList.add('open');}
 function closeDrawer(){drawer.classList.remove('open');}
 
-function validateField(el, message) {
+function validateField(el, message, icon) {
   const value = (el.value || '').trim();
-  if (!value) {
-    showModal(message);
-    el.classList.add('invalid-field');
-    el.focus();
-    setTimeout(() => el.classList.remove('invalid-field'), 1500);
-    return false;
-  }
+  if (!value) { showModal(message, icon); el.classList.add('invalid-field'); el.focus(); setTimeout(() => el.classList.remove('invalid-field'), 1500); return false; }
   return value;
 }
 
-// Lógica original de CEP
 async function lookup(){
     const dig=onlyDigits(cepInput.value); 
     if(dig.length!==8) return;
@@ -685,30 +816,52 @@ async function lookup(){
         if(!bairroInput.value)bairroInput.value=d.bairro||'';
         numeroInput.focus();
       }
-    }catch(e){
-        console.error("CEP lookup failed", e);
-    }
+    }catch(e){}
     finally { cepSpinner.classList.remove('loading'); }
 }
 
 // --- 5. EVENT LISTENERS & INITIALIZATION ---
-// (Listeners da UI Nova)
 document.getElementById('openCart').onclick = openDrawer;
 document.getElementById('viewCartBtn').onclick = openDrawer;
 document.getElementById('closeTop').onclick = closeDrawer;
 document.getElementById('continueBtn').onclick = closeDrawer;
 document.getElementById('modalCloseBtn').onclick = closeModal;
+document.getElementById('noticeCloseBtn').onclick = () => noticeModal.classList.remove('show');
+noticeModal.onclick = (e) => { if (e.target === noticeModal) noticeModal.classList.remove('show'); };
+modalForm.addEventListener('change', () => {
+    if (currentProductKey) { // Garante que só executa se um produto estiver ativo
+        renderMods();
+        updateModalPrice();
+    }
+});
 document.getElementById('modalAddToCartBtn').onclick = () => {
-  const cfg = MENU[currentProductKey];
-  const flavor = modalForm.querySelector('[name="flavor"]').value;
-  const qty = modalForm.querySelector('[name="qty"]').value;
-  const tema = modalForm.querySelector('[name="tema"]')?.value.trim() || undefined;
-  const basePrice = cfg.flavors[flavor]?.[qty];
-  if (!basePrice) { return; }
-  const selectedMods = Array.from(modalForm.querySelectorAll('[name="mods"]:checked')).map(mod => ({ id: mod.value, label: mod.parentElement.textContent.trim(), price: parseFloat(mod.dataset.price) }));
-  const item = { key: currentProductKey, title: cfg.title, flavor: flavor, pack: qty, price: basePrice, mods: selectedMods, tema: tema };
-  addToCart(item);
-  closeModal();
+    const cfg = MENU[currentProductKey];
+    const flavor = modalForm.querySelector('[name="flavor"]').value;
+    const qty = modalForm.querySelector('[name="qty"]').value;
+    const basePrice = cfg.flavors[flavor]?.[qty];
+    if (!basePrice) return;
+    
+    const selectedOptions = (cfg.options || []).map(opt => ({
+        key: opt.key,
+        label: opt.label,
+        value: modalForm.querySelector(`[name="${opt.key}"]`).value
+    }));
+
+    const selectedMods = Array.from(modalForm.querySelectorAll('[name="mods"]:checked')).map(mod => {
+        const modData = cfg.mods.find(m => m.id === mod.value);
+        return { id: mod.value, label: mod.parentElement.textContent.trim(), prices: modData.prices };
+    });
+
+    const tema = modalForm.querySelector('[name="tema"]');
+    if (cfg.extra === 'tema' && !tema.value.trim()){
+        showModal('Por favor, preencha o tema para este item personalizado. 🎨');
+        tema.classList.add('invalid-field');
+        setTimeout(()=> tema.classList.remove('invalid-field'), 1500);
+        return;
+    }
+
+    addToCart({ key: currentProductKey, title: cfg.title, flavor: flavor, pack: qty, price: basePrice, mods: selectedMods, tema: tema?.value.trim(), options: selectedOptions });
+    closeModal();
 };
 
 const dragArea = document.querySelector('.modal-drag-area');
@@ -718,7 +871,6 @@ dragArea.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; 
 dragArea.addEventListener('touchmove', (e) => { if (!isDragging) return; const currentY = e.touches[0].clientY; const deltaY = currentY - startY; if (deltaY > 0) { modalBox.style.transform = `translateY(${deltaY}px)`; } });
 dragArea.addEventListener('touchend', (e) => { if (!isDragging) return; isDragging = false; modalBox.classList.remove('is-dragging'); if (e.changedTouches[0].clientY - startY > dragThreshold) { closeModal(); } else { modalBox.style.transform = 'translateY(0)'; } });
 
-// (Listeners da Lógica Original do Carrinho)
 document.querySelectorAll('.segmented button[data-mode]').forEach(b=>{
   b.onclick=()=>{
     const mode=b.dataset.mode;
@@ -726,12 +878,8 @@ document.querySelectorAll('.segmented button[data-mode]').forEach(b=>{
     document.querySelectorAll('.delivery-box-container').forEach(box => {
       box.style.gridTemplateRows = box.dataset.modeBox === mode ? '1fr' : '0fr';
     });
+    if (mode === 'retirada') { deliveryFee = 0; deliveryFeeValueEl.textContent = 'A calcular'; appliedCoupon = null; }
     deliveryFeeLineEl.style.display = mode === 'entrega' ? 'flex' : 'none';
-    if (mode === 'retirada') {
-        deliveryFee = 0;
-        deliveryFeeValueEl.textContent = 'A calcular';
-        appliedCoupon = null;
-    }
     render();
   }
 });
@@ -746,7 +894,7 @@ document.getElementById('calculateFeeBtn').onclick = async () => {
     const street = ruaInput.value.trim();
     const number = numeroInput.value.trim();
     const neighborhood = bairroInput.value.trim();
-    if (!street || !number || !neighborhood) { showModal('Por favor, preencha Rua, Número e Bairro para calcular o frete.'); return; }
+    if (!street || !number || !neighborhood) { showModal('Opa, faltou um detalhe! 🥰<br>Pra gente calcular a entrega, precisamos da Rua, Número e Bairro, tá bom?'); return; }
 
     const btn = document.getElementById('calculateFeeBtn');
     btn.disabled = true; btn.innerHTML = 'Calculando...';
@@ -761,16 +909,13 @@ document.getElementById('calculateFeeBtn').onclick = async () => {
         if (!response.ok) { throw new Error(data.error || 'Ocorreu um erro desconhecido.'); }
         
         let preco = data.cost;
-        if (preco > 100) {
-            preco = preco / 100;
-        }
-
+        if (preco > 100) preco = preco / 100;
         deliveryFee = preco;
         deliveryFeeValueEl.textContent = moneyBR(deliveryFee);
         render();
-        showModal(`Taxa de entrega calculada: ${moneyBR(deliveryFee)}`, '🚚');
+        showModal(`Oba! Taxa de entrega calculada: ${moneyBR(deliveryFee)}`, '🚚');
     } catch (error) {
-        showModal(`Não foi possível calcular o frete: ${error.message}`);
+        showModal(`Hmm, não consegui encontrar o endereço. 😥<br>Poderia verificar se os dados estão certinhos?`, '🤔');
         deliveryFee = 0;
         deliveryFeeValueEl.textContent = 'Erro';
         render();
@@ -782,7 +927,7 @@ document.getElementById('calculateFeeBtn').onclick = async () => {
 
 document.getElementById('applyCouponBtn').onclick = async () => {
     const couponCode = couponInput.value.trim().toUpperCase();
-    if (!couponCode) { showModal('Por favor, digite um código de cupom.'); return; }
+    if (!couponCode) { showModal('Quase lá! Faltou digitar o seu cupom de doçura.', '🎟️'); return; }
 
     couponMessageEl.textContent = 'Verificando...'; couponMessageEl.className = '';
 
@@ -799,7 +944,8 @@ document.getElementById('applyCouponBtn').onclick = async () => {
         couponMessageEl.classList.add('success'); couponMessageEl.textContent = 'Cupom aplicado com sucesso! ✅';
     } catch (error) {
         appliedCoupon = null;
-        couponMessageEl.classList.add('error'); couponMessageEl.textContent = error.message;
+        couponMessageEl.classList.add('error');
+        couponMessageEl.textContent = "Ah, que pena! Esse cupom não é válido. 😕";
     } finally {
         persist();
         render();
@@ -810,25 +956,25 @@ document.getElementById('checkoutBtn').onclick=()=>{
   if(cart.length===0){showModal('Seu carrinho ainda está vazio, flor 🌸');return;}
   const dateValue = dateInput.value;
   const timeValue = timeInput.value;
-  if(!dateValue || !timeValue){showModal('Selecione a data e o horário com carinho 💕');return;}
+  if(!dateValue || !timeValue){showModal('Falta pouquinho! Só precisamos da data e do horário do seu pedido. 🗓️');return;}
   
   const chosenDateTime = new Date(`${dateValue}T${timeValue}`);
   if(chosenDateTime - new Date() < 24*60*60*1000 - 60000){
     const m=new Date(Date.now()+24*60*60*1000);
-    showModal(`Querida cliente 💕\nPara garantirmos frescor e capricho, precisamos de pelo menos 24 horas de antecedência.\nSeu pedido poderá ser feito a partir de: ${formatBR(m)} às ${pad2(m.getHours())}:${pad2(m.getMinutes())}.\nObrigada pela compreensão!`);
+    showModal(`Querida cliente 💕<br>Para garantirmos o frescor e capricho, precisamos de pelo menos 24h de antecedência. Seu pedido pode ser feito a partir de <strong>${formatBR(m)} às ${pad2(m.getHours())}:${pad2(m.getMinutes())}</strong>.`);
     return;
   }
 
   let nome;
   const mode=document.querySelector('.segmented button.active').dataset.mode;
   if(mode==='retirada'){
-    nome = validateField(document.getElementById('nomeRetirada'), 'Por gentileza, informe o nome para retirada 🌸');
+    nome = validateField(document.getElementById('nomeRetirada'), 'Faltou só um detalhe: o nome de quem vai retirar essa delícia!', '📝');
     if (!nome) return;
   }else{
-    nome = validateField(document.getElementById('nomeEntrega'), 'Por gentileza, informe o nome para entrega 🌸');
+    nome = validateField(document.getElementById('nomeEntrega'), 'Pra quem vamos entregar? Faltou o nome aqui!', '📝');
     if (!nome) return;
     if (deliveryFee <= 0 && (!appliedCoupon || appliedCoupon.type !== 'delivery')) {
-        showModal('Por favor, calcule a taxa de entrega antes de finalizar o pedido.');
+        showModal('Quase lá! Só falta calcular o frete antes de finalizar. 😉', '🚚');
         return;
     }
   }
@@ -843,11 +989,13 @@ document.getElementById('checkoutBtn').onclick=()=>{
   lines.push(`🌸 *Pedido para:* ${nome}`,'');
   lines.push('*Itens:*');
   cart.forEach((item, i) => {
-    let itemLine = `*${i+1})* ${item.count}x ${item.title} (${item.flavor}, ${item.pack} un)`;
-    if (item.tema) { itemLine += ` - Tema: ${item.tema}`; }
+    let itemLine = `*${i+1})* ${item.count}x ${item.title} (${(item.key === 'cupcake_tradicional' ? 'Massa' : 'Sabor/Recheio')}: ${item.flavor}, ${item.pack} un)`;
+    if (item.options) {
+        item.options.forEach(opt => { itemLine += `\n  - ${opt.label}: ${opt.value}`; });
+    }
+    if (item.tema) { itemLine += `\n  - Tema: ${item.tema}`; }
     lines.push(itemLine);
-    if (item.mods && item.mods.length > 0) { item.mods.forEach(mod => { lines.push(`  - Adicional: ${mod.label}`); }); }
-    lines.push(`   Subtotal do item: ${moneyBR(item.totalPrice * item.count)}`);
+    if (item.mods && item.mods.length > 0) { item.mods.forEach(mod => { lines.push(`  - Adicional: ${mod.label.split('+')[0].trim()}`); }); }
   });
   lines.push('');
   lines.push(`*Valores:*`);
@@ -887,9 +1035,10 @@ timeInput.value = `${pad2(minDate.getHours())}:${pad2(minDate.getMinutes())}`;
 document.getElementById('y').textContent=new Date().getFullYear();
 
 // Initial calls
+load();
 renderMenu();
 setupFilters();
-load();
+
 </script>
 </body>
 </html>
