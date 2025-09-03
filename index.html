@@ -58,7 +58,7 @@ a{color:inherit;text-decoration:none} .container{max-width:940px;margin:0 auto;p
 .product-title{margin:0 0 6px;font-size:16px;line-height:1.25;color:#5a3a3a;font-weight:800}
 .price-line{margin-top:auto;padding-top:10px;color:#573333;font-weight:700}
 .price-line strong{font-size: 16px;}
-.btn{--bg1: var(--rose-300); --bg2: var(--rose-400);display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:14px;border:0;color:#fff;font-weight:900;cursor:pointer;background:linear-gradient(135deg,var(--bg1),var(--bg2));position:relative;box-shadow:0 10px 18px rgba(231,161,189,.25);transition:transform .15s ease, box-shadow .15s ease}
+.btn{--bg1: var(--rose-300); --bg2: var(--rose-400);display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:14px;border:0;color:#fff;font-weight:900;cursor:pointer;background:linear-gradient(135deg,var(--bg1),var(--bg2));position:relative;box-shadow:0 10px 18px rgba(231,161,189,.25);transition:transform .15s ease, box-shadow .15s ease, background .2s ease}
 .btn:hover{transform:translateY(-1px);box-shadow:0 12px 22px rgba(231,161,189,.32)}
 .btn-outline{background:#fff;color:#7e3a54;border:2px solid #e7a1bd;box-shadow:none}
 .toast{position:fixed;left:50%;bottom:82px;transform:translateX(-50%) translateY(16px);background:linear-gradient(135deg, var(--green-300), var(--green-500));color:#fff;padding:10px 16px;border-radius:14px;font-weight:800;box-shadow:0 8px 18px rgba(0,0,0,.2);opacity:0;pointer-events:none;z-index:110;transition:opacity .25s ease, transform .25s ease; position:relative;}
@@ -476,7 +476,6 @@ const modalBox = document.getElementById('modalBox');
 let cart = [];
 let deliveryFee = 0;
 let appliedCoupon = null;
-let additions = 0;
 const CART_KEY = 'ladocura_cart_v24_final';
 let currentProductKey = null;
 
@@ -491,8 +490,8 @@ function showModal(text, icon = '🌸') {
     alertModal.classList.add('show');
 }
 
-function saveCart() { localStorage.setItem(CART_KEY, JSON.stringify({cart, additions, appliedCoupon, deliveryFee})); }
-function loadCart() { const data = JSON.parse(localStorage.getItem(CART_KEY)); if(data){cart = data.cart || []; additions = data.additions || 0; appliedCoupon = data.appliedCoupon || null; deliveryFee = data.deliveryFee || 0;} }
+function saveCart() { localStorage.setItem(CART_KEY, JSON.stringify({cart, appliedCoupon, deliveryFee})); }
+function loadCart() { const data = JSON.parse(localStorage.getItem(CART_KEY)); if(data){cart = data.cart || []; appliedCoupon = data.appliedCoupon || null; deliveryFee = data.deliveryFee || 0;} }
 
 function addToCart(item) {
     const modsTotalPrice = (item.mods || []).reduce((sum, mod) => sum + mod.price, 0);
@@ -506,19 +505,11 @@ function addToCart(item) {
         item.count = 1;
         cart.push(item);
     }
-    additions++;
     saveCart();
     renderCart();
     const cartBadgeEl = document.querySelector('#openCart .cart-badge');
     cartBadgeEl.classList.add('jiggle');
     setTimeout(() => cartBadgeEl.classList.remove('jiggle'), 500);
-    const toastEl=document.getElementById('toast');
-    if(additions > 1) {
-        toastEl.classList.add('show');
-        setTimeout(()=>toastEl.classList.remove('show'),1800);
-    } else {
-        drawer.classList.add('open');
-    }
 }
 
 function updateCartItemCount(index, change) {
@@ -675,8 +666,25 @@ function openProductModal(key) {
             options: selectedOptions
         };
         if (!item.price) return showModal('Por favor, selecione as opções.');
+        
         addToCart(item);
-        closeModal();
+
+        const btn = document.getElementById('modalAddToCartBtn');
+        btn.textContent = '✅ Adicionado';
+        btn.style.setProperty('--bg1', 'var(--green-300)');
+        btn.style.setProperty('--bg2', 'var(--green-500)');
+        btn.disabled = true;
+
+        setTimeout(() => {
+            closeModal();
+            // Reseta o botão para a próxima vez que o modal for aberto
+            setTimeout(() => {
+                btn.textContent = 'Adicionar ao carrinho';
+                btn.style.removeProperty('--bg1');
+                btn.style.removeProperty('--bg2');
+                btn.disabled = false;
+            }, 300); // Espera a animação de fechar terminar
+        }, 1200);
     };
     updatePrice();
     productModal.classList.add('show');
