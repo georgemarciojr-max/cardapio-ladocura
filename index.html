@@ -307,7 +307,7 @@ a{color:inherit;text-decoration:none} .container{max-width:940px;margin:0 auto;p
           </div>
           <button type="button" class="btn" id="calculateFeeBtn" style="width:100%; margin-top: 16px;">
             <svg style="width:20px; height:20px" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
-            <span>Verificar Endereço</span>
+            <span>Calcular Frete</span>
           </button>
         </div>
       </div>
@@ -475,7 +475,7 @@ let currentProductKey = null;
 
 /* ====== 3. FUNÇÕES PRINCIPAIS ====== */
 const alertModal = document.getElementById('alertModal');
-const alertText = document.getElementById('alertText');
+const alertText = document.getElementById('modalText');
 const alertIcon = document.getElementById('alertIcon');
 const alertCloseBtn = document.getElementById('alertCloseBtn');
 function showModal(text, icon = '🌸') {
@@ -787,7 +787,6 @@ function setupEventListeners(){
             const data = await res.json();
             if (data.erro) { showModal('CEP não encontrado.'); }
             else {
-                // ✅ CORREÇÃO 1: "logradouro" em vez de "logouro"
                 document.getElementById('rua').value = data.logradouro;
                 document.getElementById('bairro').value = data.bairro;
                 document.getElementById('numero').focus();
@@ -796,34 +795,65 @@ function setupEventListeners(){
         finally { cepSpinner.classList.remove('loading'); }
     });
     
-    // ✅ CORREÇÃO 2: Função do botão de frete ajustada
-    document.getElementById('calculateFeeBtn').onclick = () => {
+    document.getElementById('calculateFeeBtn').onclick = async () => {
         const street = document.getElementById('rua').value.trim();
         const number = document.getElementById('numero').value.trim();
         const neighborhood = document.getElementById('bairro').value.trim();
-        if (!street || !number || !neighborhood) { 
-            return showModal('Preencha Rua, Número e Bairro para verificarmos o endereço.'); 
+        if (!street || !number || !neighborhood) { return showModal('Preencha Rua, Número e Bairro para calcular.'); }
+
+        const btn = document.getElementById('calculateFeeBtn');
+        const originalHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.textContent = 'Calculando...';
+
+        try {
+            const response = await fetch('/api/calculate-delivery', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ street, number, neighborhood, cep: document.getElementById('cep').value.trim() })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Erro desconhecido');
+            
+            let preco = data.cost;
+            if(preco > 100) { preco = preco / 100; }
+            deliveryFee = preco;
+            saveCart();
+            showModal(`Frete calculado: ${moneyBR(deliveryFee)}`, '🚚');
+        } catch (error) {
+            showModal(`Não foi possível calcular o frete: ${error.message}`);
+            deliveryFee = 0;
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
+            renderCart();
         }
-        // Em vez de calcular, apenas informa o cliente.
-        showModal('Endereço preenchido! O valor do frete será calculado e confirmado pelo WhatsApp.', '🚚');
-        deliveryFee = 0; // Garante que o frete não seja somado por engano
-        renderCart();
     };
     
-    document.getElementById('applyCouponBtn').onclick = () => {
-        // A função de cupom permanece, mas como não há API, vamos simular
+    document.getElementById('applyCouponBtn').onclick = async () => {
         const couponInput = document.getElementById('couponInput');
         const couponMessageEl = document.getElementById('couponMessage');
         const couponCode = couponInput.value.trim().toUpperCase();
+        if (!couponCode) return showModal('Digite um código de cupom.');
 
-        if (couponCode === 'DOCURA10') {
-            appliedCoupon = { code: 'DOCURA10', type: 'percentage', value: 10 };
+        couponMessageEl.textContent = 'Verificando...';
+        couponMessageEl.className = '';
+        try {
+            const response = await fetch('/api/verify-coupon', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ couponCode })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Erro');
+            
+            appliedCoupon = data.coupon;
             couponMessageEl.classList.add('success');
             couponMessageEl.textContent = 'Cupom aplicado! ✅';
-        } else {
+        } catch (error) {
             appliedCoupon = null;
             couponMessageEl.classList.add('error');
-            couponMessageEl.textContent = 'Cupom inválido.';
+            couponMessageEl.textContent = error.message;
         }
         saveCart();
         renderCart();
@@ -847,14 +877,17 @@ function setupEventListeners(){
         let nome, isValid = true;
         if (mode === 'retirada') {
             nome = document.getElementById('nomeRetirada').value.trim();
-            if(!nome) { isValid = false; document.getElementById('nomeRetirada').classList.add('invalid-field'); return showModal('Informe o nome para retirada 🌸'); }
-             document.getElementById('nomeRetirada').classList.remove('invalid-field');
+            if(!nome) { isValid = false; return showModal('Informe o nome para retirada 🌸'); }
         } else {
             nome = document.getElementById('nomeEntrega').value.trim();
             const rua=document.getElementById('rua').value.trim();
             const bairro=document.getElementById('bairro').value.trim();
             const numero=document.getElementById('numero').value.trim();
             if(!nome || !rua || !bairro || !numero) { isValid = false; return showModal('Preencha nome e endereço completo para entrega 🌸'); }
+            if (deliveryFee <= 0 && (!appliedCoupon || appliedCoupon.type !== 'delivery')) {
+                isValid = false;
+                return showModal('Calcule a taxa de entrega antes de finalizar.');
+            }
         }
         
         const subtotal = cart.reduce((sum, item) => sum + (item.totalPrice * item.count), 0);
@@ -886,10 +919,8 @@ function setupEventListeners(){
             lines.push(`🎟️ *Desconto (${appliedCoupon.code}):* -${moneyBR(discountAmount)}`);
         }
         if(mode === 'entrega'){
-          lines.push(`🛵 *Taxa de Entrega:* A combinar`);
-          lines.push(`💰 *Total Geral:* ${moneyBR(grandTotal)} + Frete`);
-        } else {
-           lines.push(`💰 *Total Geral:* ${moneyBR(grandTotal)}`);
+          lines.push(`🛵 *Taxa de Entrega:* ${moneyBR(finalDeliveryFee)}`);
+          lines.push(`💰 *Total Geral:* ${moneyBR(grandTotal)}`);
         }
         lines.push('');
         lines.push(`📅 *Data/Horário:* ${formatBR(chosenDateTime)} às ${timeValue}`);
