@@ -127,7 +127,7 @@ a{color:inherit;text-decoration:none} .container{max-width:940px;margin:0 auto;p
 #productModal.show {align-items:flex-end;}
 #productModal .modal-drag-area{position:relative; flex-shrink:0; touch-action:none; height: 16px;}
 #productModal .modal-drag-area:before{content:''; position:absolute; top:8px; left:50%; transform:translateX(-50%); width:40px; height:4px; background:#e0e0e0; border-radius:2px;}
-#productModal .modal-img{width:100%; height:auto; object-fit:contain; border-radius:var(--radius); margin-bottom:16px; max-height: 30vh;}
+#productModal .modal-img{width:100%; height: 30vh; object-fit:contain; border-radius:var(--radius); margin-bottom:16px; background:var(--rose-50);}
 #productModal .modal-close{background:var(--rose-50); color:var(--rose-400); border:1px solid var(--rose-200); width:36px; height:36px; border-radius:50%; cursor:pointer; font-weight:bold; position:absolute; top:12px; right:12px; z-index:1; display:grid; place-items:center; font-size:18px; box-shadow: 0 4px 12px rgba(0,0,0,.1);}
 #productModal .modal-body{padding:16px; flex:1; overflow-y:auto; text-align: left;}
 #productModal .modal-body h3{font-size:22px; margin:0 0 8px; color:var(--choco)}
@@ -307,7 +307,7 @@ a{color:inherit;text-decoration:none} .container{max-width:940px;margin:0 auto;p
           </div>
           <button type="button" class="btn" id="calculateFeeBtn" style="width:100%; margin-top: 16px;">
             <svg style="width:20px; height:20px" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
-            <span>Calcular Frete</span>
+            <span>Verificar Endereço</span>
           </button>
         </div>
       </div>
@@ -349,7 +349,7 @@ a{color:inherit;text-decoration:none} .container{max-width:940px;margin:0 auto;p
       <button class="modal-close" id="modalCloseBtn">✖</button>
     </div>
     <div class="modal-body">
-        <img src="" id="modalImg" class="card-img" alt="">
+        <img src="" id="modalImg" class="modal-img" alt="">
         <h3 id="modalTitle"></h3>
         <p id="modalDesc"></p>
         <form id="modalForm"></form>
@@ -364,7 +364,7 @@ a{color:inherit;text-decoration:none} .container{max-width:940px;margin:0 auto;p
 <div class="modal-overlay" id="alertModal">
   <div class="modal-box">
     <div class="modal-icon" id="alertIcon">🌸</div>
-    <p class="modal-text" id="modalText"></p>
+    <p class="modal-text" id="alertText"></p>
     <button class="btn" id="alertCloseBtn">Entendi</button>
   </div>
 </div>
@@ -475,7 +475,7 @@ let currentProductKey = null;
 
 /* ====== 3. FUNÇÕES PRINCIPAIS ====== */
 const alertModal = document.getElementById('alertModal');
-const alertText = document.getElementById('modalText'); // CORREÇÃO APLICADA AQUI
+const alertText = document.getElementById('alertText');
 const alertIcon = document.getElementById('alertIcon');
 const alertCloseBtn = document.getElementById('alertCloseBtn');
 function showModal(text, icon = '🌸') {
@@ -671,14 +671,13 @@ function openProductModal(key) {
 
         setTimeout(() => {
             closeModal();
-            // Reseta o botão para a próxima vez que o modal for aberto
             setTimeout(() => {
                 btn.textContent = 'Adicionar ao carrinho';
                 btn.style.removeProperty('--bg1');
                 btn.style.removeProperty('--bg2');
                 btn.disabled = false;
-            }, 300); // Espera a animação de fechar terminar
-        }, 800); // MUDANÇA APLICADA AQUI: Tempo reduzido para 0.8s
+            }, 300);
+        }, 800);
     };
     updatePrice();
     productModal.classList.add('show');
@@ -788,7 +787,8 @@ function setupEventListeners(){
             const data = await res.json();
             if (data.erro) { showModal('CEP não encontrado.'); }
             else {
-                document.getElementById('rua').value = data.logouro;
+                // ✅ CORREÇÃO 1: "logradouro" em vez de "logouro"
+                document.getElementById('rua').value = data.logradouro;
                 document.getElementById('bairro').value = data.bairro;
                 document.getElementById('numero').focus();
             }
@@ -796,65 +796,34 @@ function setupEventListeners(){
         finally { cepSpinner.classList.remove('loading'); }
     });
     
-    document.getElementById('calculateFeeBtn').onclick = async () => {
+    // ✅ CORREÇÃO 2: Função do botão de frete ajustada
+    document.getElementById('calculateFeeBtn').onclick = () => {
         const street = document.getElementById('rua').value.trim();
         const number = document.getElementById('numero').value.trim();
         const neighborhood = document.getElementById('bairro').value.trim();
-        if (!street || !number || !neighborhood) { return showModal('Preencha Rua, Número e Bairro para calcular.'); }
-
-        const btn = document.getElementById('calculateFeeBtn');
-        const originalHTML = btn.innerHTML;
-        btn.disabled = true;
-        btn.textContent = 'Calculando...';
-
-        try {
-            const response = await fetch('/api/calculate-delivery', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ street, number, neighborhood, cep: document.getElementById('cep').value.trim() })
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || 'Erro desconhecido');
-            
-            let preco = data.cost;
-            if(preco > 100) { preco = preco / 100; }
-            deliveryFee = preco;
-            saveCart();
-            showModal(`Frete calculado: ${moneyBR(deliveryFee)}`, '🚚');
-        } catch (error) {
-            showModal(`Não foi possível calcular o frete: ${error.message}`);
-            deliveryFee = 0;
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = originalHTML;
-            renderCart();
+        if (!street || !number || !neighborhood) { 
+            return showModal('Preencha Rua, Número e Bairro para verificarmos o endereço.'); 
         }
+        // Em vez de calcular, apenas informa o cliente.
+        showModal('Endereço preenchido! O valor do frete será calculado e confirmado pelo WhatsApp.', '🚚');
+        deliveryFee = 0; // Garante que o frete não seja somado por engano
+        renderCart();
     };
     
-    document.getElementById('applyCouponBtn').onclick = async () => {
+    document.getElementById('applyCouponBtn').onclick = () => {
+        // A função de cupom permanece, mas como não há API, vamos simular
         const couponInput = document.getElementById('couponInput');
         const couponMessageEl = document.getElementById('couponMessage');
         const couponCode = couponInput.value.trim().toUpperCase();
-        if (!couponCode) return showModal('Digite um código de cupom.');
 
-        couponMessageEl.textContent = 'Verificando...';
-        couponMessageEl.className = '';
-        try {
-            const response = await fetch('/api/verify-coupon', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ couponCode })
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.message || 'Erro');
-            
-            appliedCoupon = data.coupon;
+        if (couponCode === 'DOCURA10') {
+            appliedCoupon = { code: 'DOCURA10', type: 'percentage', value: 10 };
             couponMessageEl.classList.add('success');
             couponMessageEl.textContent = 'Cupom aplicado! ✅';
-        } catch (error) {
+        } else {
             appliedCoupon = null;
             couponMessageEl.classList.add('error');
-            couponMessageEl.textContent = error.message;
+            couponMessageEl.textContent = 'Cupom inválido.';
         }
         saveCart();
         renderCart();
@@ -878,17 +847,14 @@ function setupEventListeners(){
         let nome, isValid = true;
         if (mode === 'retirada') {
             nome = document.getElementById('nomeRetirada').value.trim();
-            if(!nome) { isValid = false; return showModal('Informe o nome para retirada 🌸'); }
+            if(!nome) { isValid = false; document.getElementById('nomeRetirada').classList.add('invalid-field'); return showModal('Informe o nome para retirada 🌸'); }
+             document.getElementById('nomeRetirada').classList.remove('invalid-field');
         } else {
             nome = document.getElementById('nomeEntrega').value.trim();
             const rua=document.getElementById('rua').value.trim();
             const bairro=document.getElementById('bairro').value.trim();
             const numero=document.getElementById('numero').value.trim();
             if(!nome || !rua || !bairro || !numero) { isValid = false; return showModal('Preencha nome e endereço completo para entrega 🌸'); }
-            if (deliveryFee <= 0 && (!appliedCoupon || appliedCoupon.type !== 'delivery')) {
-                isValid = false;
-                return showModal('Calcule a taxa de entrega antes de finalizar.');
-            }
         }
         
         const subtotal = cart.reduce((sum, item) => sum + (item.totalPrice * item.count), 0);
@@ -920,8 +886,10 @@ function setupEventListeners(){
             lines.push(`🎟️ *Desconto (${appliedCoupon.code}):* -${moneyBR(discountAmount)}`);
         }
         if(mode === 'entrega'){
-          lines.push(`🛵 *Taxa de Entrega:* ${moneyBR(finalDeliveryFee)}`);
-          lines.push(`💰 *Total Geral:* ${moneyBR(grandTotal)}`);
+          lines.push(`🛵 *Taxa de Entrega:* A combinar`);
+          lines.push(`💰 *Total Geral:* ${moneyBR(grandTotal)} + Frete`);
+        } else {
+           lines.push(`💰 *Total Geral:* ${moneyBR(grandTotal)}`);
         }
         lines.push('');
         lines.push(`📅 *Data/Horário:* ${formatBR(chosenDateTime)} às ${timeValue}`);
