@@ -88,7 +88,7 @@ a{color:inherit;text-decoration:none} .container{max-width:940px;margin:0 auto;p
 .segmented button.active{background:linear-gradient(135deg,var(--rose-300),var(--rose-400));color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
 .mobile-bar{position:sticky;bottom:0;z-index:50;background:#fff;border-top:1px solid #f3d9e4}
 .mobile-bar .wrap{max-width:940px;margin:0 auto;padding:10px 16px;display:flex;gap:10px;align-items:center;justify-content:space-between}
-.mobile-bar .subtotal{font-weight:800;color:#5a3a5a}
+.mobile-bar .subtotal{font-weight:800;color:#5a3a3a}
 .f-label{display:flex;align-items:center;gap:8px;margin:12px 0 6px;font-weight:800;color:#4b2e2e}
 .ficon{width:28px;height:28px;border-radius:8px;display:grid;place-items:center; background:linear-gradient(135deg,#ffeaf2,#ffd6e6);border:1px solid #f4cbd7;font-size:16px}
 .drawer .form-input, .drawer select, .drawer input[type="date"], .drawer input[type="time"]{width:100%;padding:12px;border:1.5px solid #f1c9d8;border-radius:12px; font:inherit;color:#4b2e2e;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.05)}
@@ -475,11 +475,11 @@ let currentProductKey = null;
 
 /* ====== 3. FUNÇÕES PRINCIPAIS ====== */
 const alertModal = document.getElementById('alertModal');
-const alertText = document.getElementById('modalText');
+const alertText = document.getElementById('alertText'); // CORREÇÃO: o id correto é 'modalText'
 const alertIcon = document.getElementById('alertIcon');
 const alertCloseBtn = document.getElementById('alertCloseBtn');
 function showModal(text, icon = '🌸') {
-    alertText.innerHTML = text;
+    document.getElementById('modalText').innerHTML = text; // CORREÇÃO: Usando o id correto
     alertIcon.textContent = icon;
     alertModal.classList.add('show');
 }
@@ -567,7 +567,8 @@ function renderCart() {
     
     cartItemsEl.innerHTML = cart.length === 0 ? '<p style="text-align:center;color:var(--ink);padding:20px;">Seu carrinho está vazio.</p>' : cart.map((it,idx) => {
       const lineTotal = it.totalPrice * it.count;
-      const unitPrice = it.totalPrice / parseInt(it.pack, 10);
+      const packUnits = parseInt(it.pack, 10);
+      const unitPrice = packUnits > 0 ? it.totalPrice / packUnits : it.totalPrice;
       const optionsHTML = it.options && it.options.length > 0 ? `<div class="muted">${it.options.map(o => `${o.label}: <strong>${o.value}</strong>`).join(' • ')}</div>` : '';
       const modsHTML = it.mods && it.mods.length > 0 ? `<div class="item-extras">${it.mods.map(m => `<div>+ ${m.label.split('+')[0].trim()}</div>`).join('')}</div>` : '';
       const unitPriceHTML = `<div class="muted">Preço unit.: <strong>${moneyBR(unitPrice)}</strong></div>`;
