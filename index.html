@@ -370,597 +370,615 @@ a{color:inherit;text-decoration:none} .container{max-width:940px;margin:0 auto;p
 </div>
 
 <script>
-/* ====== 1. CONFIGURAÇÃO GERAL E DO MENU ====== */
-const PHONE = "556992702283";
-const MENU = {
-  tradicionais: {
-    title: 'Brigadeiros Tradicionais',
-    image: 'https://i.imgur.com/EDSsPWe.jpeg',
-    description: "Os clássicos que todo mundo ama, feitos com ingredientes de alta qualidade.",
-    quantities: ['50', '100'],
-    flavors: { Chocolate: { '50': 45, '100': 80 }, Morango: { '50': 40, '100': 70 }, Beijinho: { '50': 40, '100': 70 }, 'Leite Ninho': { '50': 40, '100': 70 } },
-  },
-  gourmet: {
-    title: 'Brigadeiros Gourmet',
-    image: 'https://i.imgur.com/PGPaYnR.jpeg',
-    description: "Uma opção com produtos selecionados e decorações únicas que encantam.",
-    quantities: ['50', '100'],
-    flavors: { 'Prestígio': { '50': 85, '100': 170 }, 'Dois Amores': { '50': 85, '100': 170 }, 'Paçoca': { '50': 85, '100': 170 }, 'Ninho com Nutella': { '50': 85, '100': 170 }, 'Crème Brûlée': { '50': 85, '100': 170 },
-      'Romeu e Julieta': { '50': 85, '100': 170 },
-      'Pistache': { '50': 85, '100': 170 },
-      'Meio Amargo': { '50': 85, '100': 170 },
-      'Café': { '50': 85, '100': 170 },
-      'Churros': { '50': 85, '100': 170 } },
-    mods: [ { id: 'nutella_extra', label: 'Nutella Extra', price: 10 }, { id: 'caixa_presente_gourmet', label: 'Caixa para Presente Luxo', price: 12 } ]
-  },
-  personalizados: {
-    title: 'Brigadeiros Personalizados',
-    image: 'https://i.imgur.com/cVwbpK7.jpeg',
-    description: "Personalização linda e exclusiva para o seu evento.",
-    quantities: ['50', '100'],
-    flavors: { '18g': { '50': 95, '100': 180 }, '23g': { '50': 125, '100': 220 } },
-    extra: 'tema'
-  },
-  lembrancinhas: {
-    title: 'Lembrancinhas de Brownie',
-    image: 'https://i.imgur.com/VBQJZvB.jpeg',
-    description: "Uma explosão de sabor! Feita com chocolate de qualidade e recheios especiais.",
-    quantities: ['10', '50'],
-    flavors: { 'Maracujá': { '10': 60, '50': 300 }, 'Paçoca': { '10': 60, '50': 300 }, 'Doce de Leite': { '10': 60, '50': 300 } },
-  },
-  minibrownie: {
-    title: 'Mini Brownie',
-    image: 'https://i.imgur.com/l4dmGwS.jpeg',
-    description: "Deliciosamente macios, preparados com chocolate premium. Perfeitos para sua festa.",
-    quantities: ['50', '100'],
-    flavors: { 'Chocolate': { '50': 110, '100': 219 }, 'Maracujá': { '50': 110, '100': 210 }, 'Leite Ninho': { '50': 110, '100': 210 } },
-  },
-  cupcake_tradicional: {
-    title: 'Cupcake Tradicional',
-    image: 'https://i.imgur.com/3AYf1Zd.jpeg',
-    description: "A massa perfeita para um bolinho clássico e delicioso. Escolha sua preferida.",
-    quantities: ['10', '25'],
-    flavors: { 'Massa Branca': { '10': 40, '25': 87 }, 'Massa Chocolate': { '10': 40, '25': 87 } }
-  },
-  cupcake_recheado: {
-    title: 'Cupcake Recheado',
-    image: 'https://i.imgur.com/b955ZT8.jpeg',
-    description: "Escolha a combinação de massa e recheio para criar seu cupcake dos sonhos.",
-    quantities: ['10', '25'],
-    flavors: { 'Brigadeiro ao Leite': { '10': 50, '25': 112 }, 'Brigadeiro de Leite Ninho': { '10': 50, '25': 112 } },
-    options: [{ key: 'massa', label: 'Massa', values: ['Branca', 'Chocolate'] }],
-  },
-  minidonuts: {
-    title: 'Mini Donuts',
-    image: 'https://i.imgur.com/1mksuiB.jpeg',
-    description: "Fofinhos, deliciosos e personalizados com o tema da sua festa.",
-    quantities: ['10', '25'],
-    flavors: { 'Homer (rosa com granulado)': { '10': 35, '25': 75 }, 'Chocolate ao Leite': { '10': 35, '25': 75 }, 'Açúcar e Canela': { '10': 35, '25': 75 } },
-    extra: 'tema'
-  },
-  colher: {
-    title: 'Brigadeiros de Colher',
-    image: 'https://i.imgur.com/EJi0yZ2.jpeg',
-    description: "A cremosidade que derrete na boca. Ideal para comer sem moderação.",
-    quantities: ['50','100'],
-    flavors:{'Chocolate':{'50':40,'100':70},'Beijinho':{'50':40,'100':70},'Bicho de Pé':{'50':40,'100':70}}
-  },
-  copo: {
-    title: 'Mini Copo Bolha',
-    image: 'https://i.imgur.com/iie6pqD.jpeg',
-    description: "A sobremesa que também decora sua festa. Uma explosão de sabores.",
-    quantities: ['10','50'],
-    flavors:{'Frutas Vermelhas':{'10':25,'50':110},'Brownie':{'10':25,'50':110},'Torta de Limão':{'10':25,'50':110}}
-  }
-};
+// Aguarda o carregamento completo da página antes de executar o script
+document.addEventListener('DOMContentLoaded', () => {
 
-/* ====== 2. HELPERS E ESTADO GLOBAL ====== */
-const moneyBR = v => `R$ ${v.toFixed(2).replace('.', ',')}`;
-const onlyDigits = s => (s || '').replace(/\D+/g, '');
-const pad2 = n => String(n).padStart(2,'0');
-const toLocalInputValue = d => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-const formatBR = d => `${pad2(d.getDate()).toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
-const menuStack = document.getElementById('menuStack');
-const chipsEl = document.getElementById('chips');
-const cartCountEl = document.getElementById('cartCount');
-const mobileSubtotal = document.getElementById('mobileSubtotal');
-const drawer = document.getElementById('drawer');
-const productModal = document.getElementById('productModal');
-const modalBox = document.getElementById('modalBox');
-let cart = [];
-let deliveryFee = 0;
-let appliedCoupon = null;
-const CART_KEY = 'ladocura_cart_v24_final';
-let currentProductKey = null;
-
-/* ====== 3. FUNÇÕES PRINCIPAIS ====== */
-const alertModal = document.getElementById('alertModal');
-const alertText = document.getElementById('alertText'); // CORREÇÃO: o id correto é 'modalText'
-const alertIcon = document.getElementById('alertIcon');
-const alertCloseBtn = document.getElementById('alertCloseBtn');
-function showModal(text, icon = '🌸') {
-    document.getElementById('modalText').innerHTML = text; // CORREÇÃO: Usando o id correto
-    alertIcon.textContent = icon;
-    alertModal.classList.add('show');
-}
-
-function saveCart() { localStorage.setItem(CART_KEY, JSON.stringify({cart, appliedCoupon, deliveryFee})); }
-function loadCart() { const data = JSON.parse(localStorage.getItem(CART_KEY)); if(data){cart = data.cart || []; appliedCoupon = data.appliedCoupon || null; deliveryFee = data.deliveryFee || 0;} }
-
-function addToCart(item) {
-    const modsTotalPrice = (item.mods || []).reduce((sum, mod) => sum + mod.price, 0);
-    const itemIdentifier = `${item.key}-${item.flavor}-${item.pack}-${(item.options || []).map(o => o.value).join('-')}-${(item.mods || []).map(m=>m.id).join('-')}-${item.tema || ''}`;
-    const existingItem = cart.find(i => i.identifier === itemIdentifier);
-    if (existingItem) {
-        existingItem.count++;
-    } else {
-        item.totalPrice = item.price + modsTotalPrice;
-        item.identifier = itemIdentifier;
-        item.count = 1;
-        cart.push(item);
-    }
-    saveCart();
-    renderCart();
-    const cartBadgeEl = document.querySelector('#openCart .cart-badge');
-    cartBadgeEl.classList.add('jiggle');
-    setTimeout(() => cartBadgeEl.classList.remove('jiggle'), 500);
-}
-
-function updateCartItemCount(index, change) {
-    if(!cart[index]) return;
-    const itemEl = document.querySelector(`.cart-item[data-identifier="${cart[index].identifier}"]`);
-    cart[index].count += change;
-    if (cart[index].count <= 0) {
-        if(itemEl) itemEl.classList.add('removing');
-        setTimeout(() => {
-            cart.splice(index, 1);
-            saveCart();
-            renderCart();
-        }, 300);
-        return;
-    }
-    saveCart();
-    renderCart();
-}
-
-function renderMenu() {
-    menuStack.innerHTML = '';
-    Object.entries(MENU).forEach(([key, cfg]) => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.dataset.key = key;
-        const minPrice = Math.min(...Object.values(cfg.flavors).flatMap(q => Object.values(q)));
-        card.innerHTML = `
-          <div class="card-img"><img src="${cfg.image}" alt="${cfg.title}" loading="lazy"></div>
-          <div class="card-body">
-            <h3 class="product-title">${cfg.title}</h3>
-            <div class="price-line">A partir de <strong>${moneyBR(minPrice)}</strong></div>
-          </div>
-        `;
-        card.onclick = () => openProductModal(key);
-        menuStack.appendChild(card);
-    });
-}
-
-function renderCart() {
-    const cartItemsEl=document.getElementById('cartItems');
-    const subtotalValueEl = document.getElementById('subtotalValue');
-    const deliveryFeeLineEl = document.getElementById('delivery-fee-line');
-    const deliveryFeeValueEl = document.getElementById('deliveryFeeValue');
-    const discountLineEl = document.getElementById('discount-line');
-    const discountValueEl = document.getElementById('discountValue');
-    const grandTotalValueEl = document.getElementById('grandTotalValue');
-
-    const subtotal = cart.reduce((sum, item) => sum + (item.totalPrice * item.count), 0);
-    let discountAmount = 0;
-    
-    if (appliedCoupon) {
-        if (appliedCoupon.type === 'percentage') {
-            discountAmount = subtotal * (appliedCoupon.value / 100);
-        } else if (appliedCoupon.type === 'delivery') {
-            discountAmount = deliveryFee > 0 ? deliveryFee : 0;
-        }
-    }
-    
-    const finalDeliveryFee = (appliedCoupon && appliedCoupon.type === 'delivery') ? 0 : deliveryFee;
-    const grandTotal = Math.max(0, subtotal + finalDeliveryFee - discountAmount);
-    
-    cartItemsEl.innerHTML = cart.length === 0 ? '<p style="text-align:center;color:var(--ink);padding:20px;">Seu carrinho está vazio.</p>' : cart.map((it,idx) => {
-      const lineTotal = it.totalPrice * it.count;
-      const packUnits = parseInt(it.pack, 10);
-      const unitPrice = packUnits > 0 ? it.totalPrice / packUnits : it.totalPrice;
-      const optionsHTML = it.options && it.options.length > 0 ? `<div class="muted">${it.options.map(o => `${o.label}: <strong>${o.value}</strong>`).join(' • ')}</div>` : '';
-      const modsHTML = it.mods && it.mods.length > 0 ? `<div class="item-extras">${it.mods.map(m => `<div>+ ${m.label.split('+')[0].trim()}</div>`).join('')}</div>` : '';
-      const unitPriceHTML = `<div class="muted">Preço unit.: <strong>${moneyBR(unitPrice)}</strong></div>`;
-      
-      return `<div class="cart-item" data-identifier="${it.identifier}">
-        <div class="item-row">
-          <div class="item-info">
-            <h4>${it.title}</h4>
-            <div class="muted">Sabor: <strong>${it.flavor}</strong> • Quantidade: <strong>${it.pack} un</strong></div>
-            ${optionsHTML}
-            ${it.tema ? `<div class="muted">Tema: <strong>${it.tema}</strong></div>` : ''}
-            ${modsHTML}
-            ${unitPriceHTML}
-            <div class="muted">Total: <strong>${moneyBR(lineTotal)}</strong></div>
-          </div>
-          <div class="qty-col">
-            <div class="qty-ctl">
-              <button data-action="dec" data-index="${idx}">−</button>
-              <span><strong>${it.count}</strong></span>
-              <button data-action="inc" data-index="${idx}">+</button>
-            </div>
-            <button class="rmv" data-action="rmv" data-index="${idx}">Remover</button>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-
-    subtotalValueEl.textContent = moneyBR(subtotal);
-    grandTotalValueEl.textContent = moneyBR(grandTotal);
-    deliveryFeeValueEl.textContent = deliveryFee > 0 ? moneyBR(deliveryFee) : 'A calcular';
-    
-    if(discountAmount > 0){
-        discountValueEl.textContent = `-${moneyBR(discountAmount)}`;
-        discountLineEl.style.display = 'flex';
-    } else {
-        discountLineEl.style.display = 'none';
-    }
-    
-    const totalCount = cart.reduce((sum, i) => sum + i.count, 0);
-    cartCountEl.textContent = totalCount;
-    mobileSubtotal.textContent = `Total: ${moneyBR(grandTotal)}`;
-}
-
-function openProductModal(key) {
-    currentProductKey = key;
-    const cfg = MENU[key];
-    document.getElementById('modalImg').src = cfg.image;
-    document.getElementById('modalTitle').textContent = cfg.title;
-    document.getElementById('modalDesc').textContent = cfg.description;
-    
-    let formHTML = `<div class="option-group"><label>${cfg.extra === 'tema' ? 'Cobertura' : 'Sabor'}</label><select name="flavor" class="form-input">${Object.keys(cfg.flavors).map(f => `<option value="${f}">${f}</option>`).join('')}</select></div>`;
-    if(cfg.options){
-        cfg.options.forEach(opt => {
-            formHTML += `<div class="option-group"><label>${opt.label}</label><select name="${opt.key}" class="form-input">${opt.values.map(v => `<option value="${v}">${v}</option>`).join('')}</select></div>`;
-        });
-    }
-    formHTML += `<div class="option-group"><label>Quantidade</label><select name="qty" class="form-input">${cfg.quantities.map(q => `<option value="${q}">${q} unidades</option>`).join('')}</select></div>`;
-    if (cfg.extra === 'tema') { formHTML += `<div class="option-group"><label>Tema da festa (opcional)</label><input type="text" name="tema" class="form-input" placeholder="Ex: Unicórnio, Mickey..."></div>`; }
-    if (cfg.mods && cfg.mods.length > 0) { formHTML += `<div class="option-group"><label>Adicionais</label>${cfg.mods.map(m => `<div class="mod-line"><label><input type="checkbox" name="mods" value="${m.id}" data-price="${m.price}"> ${m.label}</label><strong>+ ${moneyBR(m.price)}</strong></div>`).join('')}</div>`; }
-    
-    const modalForm = document.getElementById('modalForm');
-    modalForm.innerHTML = formHTML;
-    
-    const updatePrice = () => {
-        if(!currentProductKey) return;
-        const cfg = MENU[currentProductKey];
-        const flavor = modalForm.querySelector('[name="flavor"]').value;
-        const qty = modalForm.querySelector('[name="qty"]').value;
-        let basePrice = cfg.flavors[flavor]?.[qty] || 0;
-        let modsPrice = 0;
-        modalForm.querySelectorAll('[name="mods"]:checked').forEach(mod => { modsPrice += parseFloat(mod.dataset.price); });
-        document.getElementById('modalPrice').textContent = moneyBR(basePrice + modsPrice);
-    };
-    modalForm.onchange = updatePrice;
-    
-    document.getElementById('modalAddToCartBtn').onclick = () => {
-        const selectedOptions = (cfg.options || []).map(opt => ({
-            key: opt.key,
-            label: opt.label,
-            value: modalForm.querySelector(`select[name="${opt.key}"]`).value
-        }));
-        const item = {
-            key: currentProductKey,
-            title: cfg.title,
-            flavor: modalForm.querySelector('[name="flavor"]').value,
-            pack: modalForm.querySelector('[name="qty"]').value,
-            price: cfg.flavors[modalForm.querySelector('[name="flavor"]').value]?.[modalForm.querySelector('[name="qty"]').value],
-            tema: modalForm.querySelector('[name="tema"]')?.value.trim() || undefined,
-            mods: Array.from(modalForm.querySelectorAll('[name="mods"]:checked')).map(mod => ({ id: mod.value, label: mod.parentElement.textContent.trim(), price: parseFloat(mod.dataset.price) })),
-            options: selectedOptions
-        };
-        if (!item.price) return showModal('Por favor, selecione as opções.');
-        
-        addToCart(item);
-
-        const btn = document.getElementById('modalAddToCartBtn');
-        btn.textContent = '✅ Adicionado';
-        btn.style.setProperty('--bg1', 'var(--green-300)');
-        btn.style.setProperty('--bg2', 'var(--green-500)');
-        btn.disabled = true;
-
-        setTimeout(() => {
-            closeModal();
-            setTimeout(() => {
-                btn.textContent = 'Adicionar ao carrinho';
-                btn.style.removeProperty('--bg1');
-                btn.style.removeProperty('--bg2');
-                btn.disabled = false;
-            }, 300);
-        }, 800);
-    };
-    updatePrice();
-    productModal.classList.add('show');
-}
-function closeModal() {
-    modalBox.style.transform = 'translateY(100%)';
-    setTimeout(() => { productModal.classList.remove('show'); modalBox.style.transform = ''; }, 300);
-}
-
-function setupFilters() {
-    const filters = {
-        'Todos': () => true,
-        'Brigadeiros': key => ['tradicionais', 'gourmet', 'personalizados', 'colher'].includes(key),
-        'Brownies': key => ['lembrancinhas', 'minibrownie'].includes(key),
-        'Bolinhos': key => ['cupcake_tradicional', 'cupcake_recheado'].includes(key),
-        'Donuts': key => ['minidonuts'].includes(key),
-        'Copinhos': key => ['copo'].includes(key),
+    /* ====== 1. CONFIGURAÇÃO GERAL E DO MENU ====== */
+    const PHONE = "556992702283";
+    const MENU = {
+      tradicionais: {
+        title: 'Brigadeiros Tradicionais',
+        image: 'https://i.imgur.com/EDSsPWe.jpeg',
+        description: "Os clássicos que todo mundo ama, feitos com ingredientes de alta qualidade.",
+        quantities: ['50', '100'],
+        flavors: { Chocolate: { '50': 45, '100': 80 }, Morango: { '50': 40, '100': 70 }, Beijinho: { '50': 40, '100': 70 }, 'Leite Ninho': { '50': 40, '100': 70 } },
+      },
+      gourmet: {
+        title: 'Brigadeiros Gourmet',
+        image: 'https://i.imgur.com/PGPaYnR.jpeg',
+        description: "Uma opção com produtos selecionados e decorações únicas que encantam.",
+        quantities: ['50', '100'],
+        flavors: { 'Prestígio': { '50': 85, '100': 170 }, 'Dois Amores': { '50': 85, '100': 170 }, 'Paçoca': { '50': 85, '100': 170 }, 'Ninho com Nutella': { '50': 85, '100': 170 }, 'Crème Brûlée': { '50': 85, '100': 170 },
+          'Romeu e Julieta': { '50': 85, '100': 170 },
+          'Pistache': { '50': 85, '100': 170 },
+          'Meio Amargo': { '50': 85, '100': 170 },
+          'Café': { '50': 85, '100': 170 },
+          'Churros': { '50': 85, '100': 170 } },
+        mods: [ { id: 'nutella_extra', label: 'Nutella Extra', price: 10 }, { id: 'caixa_presente_gourmet', label: 'Caixa para Presente Luxo', price: 12 } ]
+      },
+      personalizados: {
+        title: 'Brigadeiros Personalizados',
+        image: 'https://i.imgur.com/cVwbpK7.jpeg',
+        description: "Personalização linda e exclusiva para o seu evento.",
+        quantities: ['50', '100'],
+        flavors: { '18g': { '50': 95, '100': 180 }, '23g': { '50': 125, '100': 220 } },
+        extra: 'tema'
+      },
+      lembrancinhas: {
+        title: 'Lembrancinhas de Brownie',
+        image: 'https://i.imgur.com/VBQJZvB.jpeg',
+        description: "Uma explosão de sabor! Feita com chocolate de qualidade e recheios especiais.",
+        quantities: ['10', '50'],
+        flavors: { 'Maracujá': { '10': 60, '50': 300 }, 'Paçoca': { '10': 60, '50': 300 }, 'Doce de Leite': { '10': 60, '50': 300 } },
+      },
+      minibrownie: {
+        title: 'Mini Brownie',
+        image: 'https://i.imgur.com/l4dmGwS.jpeg',
+        description: "Deliciosamente macios, preparados com chocolate premium. Perfeitos para sua festa.",
+        quantities: ['50', '100'],
+        flavors: { 'Chocolate': { '50': 110, '100': 219 }, 'Maracujá': { '50': 110, '100': 210 }, 'Leite Ninho': { '50': 110, '100': 210 } },
+      },
+      cupcake_tradicional: {
+        title: 'Cupcake Tradicional',
+        image: 'https://i.imgur.com/3AYf1Zd.jpeg',
+        description: "A massa perfeita para um bolinho clássico e delicioso. Escolha sua preferida.",
+        quantities: ['10', '25'],
+        flavors: { 'Massa Branca': { '10': 40, '25': 87 }, 'Massa Chocolate': { '10': 40, '25': 87 } }
+      },
+      cupcake_recheado: {
+        title: 'Cupcake Recheado',
+        image: 'https://i.imgur.com/b955ZT8.jpeg',
+        description: "Escolha a combinação de massa e recheio para criar seu cupcake dos sonhos.",
+        quantities: ['10', '25'],
+        flavors: { 'Brigadeiro ao Leite': { '10': 50, '25': 112 }, 'Brigadeiro de Leite Ninho': { '10': 50, '25': 112 } },
+        options: [{ key: 'massa', label: 'Massa', values: ['Branca', 'Chocolate'] }],
+      },
+      minidonuts: {
+        title: 'Mini Donuts',
+        image: 'https://i.imgur.com/1mksuiB.jpeg',
+        description: "Fofinhos, deliciosos e personalizados com o tema da sua festa.",
+        quantities: ['10', '25'],
+        flavors: { 'Homer (rosa com granulado)': { '10': 35, '25': 75 }, 'Chocolate ao Leite': { '10': 35, '25': 75 }, 'Açúcar e Canela': { '10': 35, '25': 75 } },
+        extra: 'tema'
+      },
+      colher: {
+        title: 'Brigadeiros de Colher',
+        image: 'https://i.imgur.com/EJi0yZ2.jpeg',
+        description: "A cremosidade que derrete na boca. Ideal para comer sem moderação.",
+        quantities: ['50','100'],
+        flavors:{'Chocolate':{'50':40,'100':70},'Beijinho':{'50':40,'100':70},'Bicho de Pé':{'50':40,'100':70}}
+      },
+      copo: {
+        title: 'Mini Copo Bolha',
+        image: 'https://i.imgur.com/iie6pqD.jpeg',
+        description: "A sobremesa que também decora sua festa. Uma explosão de sabores.",
+        quantities: ['10','50'],
+        flavors:{'Frutas Vermelhas':{'10':25,'50':110},'Brownie':{'10':25,'50':110},'Torta de Limão':{'10':25,'50':110}}
+      }
     };
 
-    chipsEl.innerHTML = '';
-    Object.keys(filters).forEach((name, index) => {
-        const b = document.createElement('button');
-        b.textContent = name;
-        if (index === 0) b.classList.add('active');
-        b.dataset.filterName = name;
-        chipsEl.appendChild(b);
-    });
-
-    chipsEl.addEventListener('click', e => {
-        if (e.target.tagName === 'BUTTON') {
-            const filterName = e.target.dataset.filterName;
-            const filterFn = filters[filterName];
-            chipsEl.querySelectorAll('button').forEach(x => x.classList.remove('active'));
-            e.target.classList.add('active');
-            document.getElementById('menuStack').querySelectorAll('.card').forEach(card => {
-                card.style.display = filterFn(card.dataset.key) ? 'flex' : 'none';
-            });
-        }
-    });
-    
-    document.getElementById('searchInput').addEventListener('input', e => {
-        const query = e.target.value.toLowerCase();
-        chipsEl.querySelector('button').click(); 
-        menuStack.querySelectorAll('.card').forEach(card => {
-            const cfg = MENU[card.dataset.key];
-            const searchText = `${cfg.title} ${cfg.description} ${Object.keys(cfg.flavors).join(' ')}`.toLowerCase();
-            card.style.display = searchText.includes(query) ? '' : 'none';
-        });
-    });
-}
-
-/* ====== 4. LÓGICA DE EVENTOS (CLICKS, ETC.) ====== */
-function setupEventListeners(){
-    const alertCloseBtn = document.getElementById('alertCloseBtn');
-    alertCloseBtn.onclick = () => alertModal.classList.remove('show');
-    alertModal.onclick = (e) => { if (e.target === alertModal) alertModal.classList.remove('show'); };
-    
-    document.getElementById('openCart').onclick = () => drawer.classList.add('open');
-    document.getElementById('viewCartBtn').onclick = () => drawer.classList.add('open');
-    document.getElementById('closeTop').onclick = () => drawer.classList.remove('open');
-    document.getElementById('continueBtn').onclick = () => drawer.classList.remove('open');
-    document.getElementById('modalCloseBtn').onclick = closeModal;
-    
-    const dragArea = document.querySelector('#productModal .modal-drag-area');
-    let startY, isDragging = false; const dragThreshold = 80;
-    dragArea.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; isDragging = true; modalBox.classList.add('is-dragging'); });
-    dragArea.addEventListener('touchmove', (e) => { if (!isDragging) return; const deltaY = e.touches[0].clientY - startY; if (deltaY > 0) { modalBox.style.transform = `translateY(${deltaY}px)`; }});
-    dragArea.addEventListener('touchend', (e) => { if (!isDragging) return; isDragging = false; modalBox.classList.remove('is-dragging'); if (e.changedTouches[0].clientY - startY > dragThreshold) { closeModal(); } else { modalBox.style.transform = 'translateY(0)'; }});
-
-    document.getElementById('cartItems').addEventListener('click', e => {
-        const target = e.target.closest('[data-action]');
-        if(target) {
-            const index = parseInt(target.dataset.index);
-            const action = target.dataset.action;
-            if(action === 'inc') updateCartItemCount(index, 1);
-            if(action === 'dec') updateCartItemCount(index, -1);
-            if(action === 'rmv') updateCartItemCount(index, -cart[index].count);
-        }
-    });
-
-    document.querySelectorAll('.segmented button[data-mode]').forEach(b=>{
-        b.onclick=()=>{
-            const mode=b.dataset.mode;
-            document.querySelectorAll('.segmented button[data-mode]').forEach(x=>x.classList.toggle('active',x.dataset.mode === mode));
-            document.querySelectorAll('.delivery-box-container').forEach(box => {
-                box.classList.toggle('visible', box.dataset.modeBox === mode);
-            });
-            document.getElementById('delivery-fee-line').style.display = mode === 'entrega' ? 'flex' : 'none';
-            if (mode === 'retirada') {
-                deliveryFee = 0;
-                if (appliedCoupon && appliedCoupon.type === 'delivery') appliedCoupon = null;
-                saveCart();
-                renderCart();
-            }
-        }
-    });
-    
-    const cepInput = document.getElementById('cep');
-    cepInput.addEventListener('input',()=>{let v=onlyDigits(cepInput.value).slice(0,8); if(v.length>5) v=v.slice(0,5)+'-'+v.slice(5); cepInput.value=v;});
-    cepInput.addEventListener('blur', async (e) => {
-        const cep = onlyDigits(e.target.value);
-        if (cep.length !== 8) return;
-        const cepSpinner = document.getElementById('cepSpinner');
-        cepSpinner.classList.add('loading');
-        try {
-            const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-            const data = await res.json();
-            if (data.erro) { showModal('CEP não encontrado.'); }
-            else {
-                document.getElementById('rua').value = data.logradouro;
-                document.getElementById('bairro').value = data.bairro;
-                document.getElementById('numero').focus();
-            }
-        } catch(err) { showModal('Erro ao buscar CEP.'); }
-        finally { cepSpinner.classList.remove('loading'); }
-    });
-    
-    document.getElementById('calculateFeeBtn').onclick = async () => {
-        const street = document.getElementById('rua').value.trim();
-        const number = document.getElementById('numero').value.trim();
-        const neighborhood = document.getElementById('bairro').value.trim();
-        if (!street || !number || !neighborhood) { return showModal('Preencha Rua, Número e Bairro para calcular.'); }
-
-        const btn = document.getElementById('calculateFeeBtn');
-        const originalHTML = btn.innerHTML;
-        btn.disabled = true;
-        btn.textContent = 'Calculando...';
-
-        try {
-            const response = await fetch('/api/calculate-delivery', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ street, number, neighborhood, cep: document.getElementById('cep').value.trim() })
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || 'Erro desconhecido');
-            
-            let preco = data.cost;
-            if(preco > 100) { preco = preco / 100; }
-            deliveryFee = preco;
-            saveCart();
-            showModal(`Frete calculado: ${moneyBR(deliveryFee)}`, '🚚');
-        } catch (error) {
-            showModal(`Não foi possível calcular o frete: ${error.message}`);
-            deliveryFee = 0;
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = originalHTML;
-            renderCart();
-        }
+    /* ====== 2. SELETORES DE ELEMENTOS E ESTADO GLOBAL ====== */
+    // Acessar todos os elementos do DOM aqui, uma única vez.
+    const elements = {
+        menuStack: document.getElementById('menuStack'),
+        chips: document.getElementById('chips'),
+        cartCount: document.getElementById('cartCount'),
+        mobileSubtotal: document.getElementById('mobileSubtotal'),
+        drawer: document.getElementById('drawer'),
+        cartItems: document.getElementById('cartItems'),
+        subtotalValue: document.getElementById('subtotalValue'),
+        deliveryFeeLine: document.getElementById('delivery-fee-line'),
+        deliveryFeeValue: document.getElementById('deliveryFeeValue'),
+        discountLine: document.getElementById('discount-line'),
+        discountValue: document.getElementById('discountValue'),
+        grandTotalValue: document.getElementById('grandTotalValue'),
+        // Modais
+        productModal: document.getElementById('productModal'),
+        modalBox: document.getElementById('modalBox'),
+        alertModal: document.getElementById('alertModal'),
+        alertText: document.getElementById('alertText'),
+        alertIcon: document.getElementById('alertIcon'),
+        // Botões e Inputs
+        searchInput: document.getElementById('searchInput'),
+        openCartBtn: document.getElementById('openCart'),
+        viewCartBtn: document.getElementById('viewCartBtn'),
+        closeTopBtn: document.getElementById('closeTop'),
+        continueBtn: document.getElementById('continueBtn'),
+        alertCloseBtn: document.getElementById('alertCloseBtn'),
+        modalCloseBtn: document.getElementById('modalCloseBtn'),
+        calculateFeeBtn: document.getElementById('calculateFeeBtn'),
+        applyCouponBtn: document.getElementById('applyCouponBtn'),
+        checkoutBtn: document.getElementById('checkoutBtn'),
+        cepInput: document.getElementById('cep'),
+        dateInput: document.getElementById('date'),
+        timeInput: document.getElementById('time'),
     };
     
-    document.getElementById('applyCouponBtn').onclick = async () => {
-        const couponInput = document.getElementById('couponInput');
-        const couponMessageEl = document.getElementById('couponMessage');
-        const couponCode = couponInput.value.trim().toUpperCase();
-        if (!couponCode) return showModal('Digite um código de cupom.');
+    // Estado da aplicação
+    let cart = [];
+    let deliveryFee = 0;
+    let appliedCoupon = null;
+    let currentProductKey = null;
+    const CART_KEY = 'ladocura_cart_v25_fixed';
 
-        couponMessageEl.textContent = 'Verificando...';
-        couponMessageEl.className = '';
-        try {
-            const response = await fetch('/api/verify-coupon', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ couponCode })
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.message || 'Erro');
-            
-            appliedCoupon = data.coupon;
-            couponMessageEl.classList.add('success');
-            couponMessageEl.textContent = 'Cupom aplicado! ✅';
-        } catch (error) {
-            appliedCoupon = null;
-            couponMessageEl.classList.add('error');
-            couponMessageEl.textContent = error.message;
+    /* ====== 3. FUNÇÕES PRINCIPAIS ====== */
+    const moneyBR = v => `R$ ${v.toFixed(2).replace('.', ',')}`;
+    const onlyDigits = s => (s || '').replace(/\D+/g, '');
+    const pad2 = n => String(n).padStart(2,'0');
+    const toLocalInputValue = d => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+    const formatBR = d => `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()}`;
+
+    function showModal(text, icon = '🌸') {
+        elements.alertText.innerHTML = text;
+        elements.alertIcon.textContent = icon;
+        elements.alertModal.classList.add('show');
+    }
+
+    function saveCart() { localStorage.setItem(CART_KEY, JSON.stringify({cart, appliedCoupon, deliveryFee})); }
+    function loadCart() { const data = JSON.parse(localStorage.getItem(CART_KEY)); if(data){cart = data.cart || []; appliedCoupon = data.appliedCoupon || null; deliveryFee = data.deliveryFee || 0;} }
+
+    function addToCart(item) {
+        const modsTotalPrice = (item.mods || []).reduce((sum, mod) => sum + mod.price, 0);
+        const itemIdentifier = `${item.key}-${item.flavor}-${item.pack}-${(item.options || []).map(o => o.value).join('-')}-${(item.mods || []).map(m=>m.id).join('-')}-${item.tema || ''}`;
+        const existingItem = cart.find(i => i.identifier === itemIdentifier);
+        if (existingItem) {
+            existingItem.count++;
+        } else {
+            item.totalPrice = item.price + modsTotalPrice;
+            item.identifier = itemIdentifier;
+            item.count = 1;
+            cart.push(item);
         }
         saveCart();
         renderCart();
-    };
+        const cartBadgeEl = document.querySelector('#openCart .cart-badge');
+        cartBadgeEl.classList.add('jiggle');
+        setTimeout(() => cartBadgeEl.classList.remove('jiggle'), 500);
+    }
 
-    document.getElementById('checkoutBtn').onclick = () => {
-        if(cart.length === 0) return showModal('Seu carrinho ainda está vazio, flor 🌸');
-        
-        const dateInput = document.getElementById('date');
-        const timeInput = document.getElementById('time');
-        const dateValue = dateInput.value;
-        const timeValue = timeInput.value;
-        if(!dateValue || !timeValue) return showModal('Selecione a data e o horário com carinho 💕');
-        const chosenDateTime = new Date(`${dateValue}T${timeValue}`);
-        if(chosenDateTime - new Date() < 24*60*60*1000 - 60000){
-            const m=new Date(Date.now()+24*60*60*1000);
-            return showModal(`Querida cliente 💕<br>Para garantirmos o frescor e capricho, precisamos de pelo menos 24h de antecedência.<br>Seu pedido pode ser feito a partir de <strong>${formatBR(m)} às ${pad2(m.getHours())}:${pad2(m.getMinutes())}</strong>.`);
+    function updateCartItemCount(index, change) {
+        if(!cart[index]) return;
+        const itemEl = document.querySelector(`.cart-item[data-identifier="${cart[index].identifier}"]`);
+        cart[index].count += change;
+        if (cart[index].count <= 0) {
+            if(itemEl) itemEl.classList.add('removing');
+            setTimeout(() => {
+                cart.splice(index, 1);
+                saveCart();
+                renderCart();
+            }, 300);
+            return;
         }
+        saveCart();
+        renderCart();
+    }
 
-        const mode = document.querySelector('.segmented button.active').dataset.mode;
-        let nome, isValid = true;
-        if (mode === 'retirada') {
-            nome = document.getElementById('nomeRetirada').value.trim();
-            if(!nome) { isValid = false; return showModal('Informe o nome para retirada 🌸'); }
-        } else {
-            nome = document.getElementById('nomeEntrega').value.trim();
-            const rua=document.getElementById('rua').value.trim();
-            const bairro=document.getElementById('bairro').value.trim();
-            const numero=document.getElementById('numero').value.trim();
-            if(!nome || !rua || !bairro || !numero) { isValid = false; return showModal('Preencha nome e endereço completo para entrega 🌸'); }
-            if (deliveryFee <= 0 && (!appliedCoupon || appliedCoupon.type !== 'delivery')) {
-                isValid = false;
-                return showModal('Calcule a taxa de entrega antes de finalizar.');
+    function renderMenu() {
+        elements.menuStack.innerHTML = '';
+        Object.entries(MENU).forEach(([key, cfg]) => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.key = key;
+            const minPrice = Math.min(...Object.values(cfg.flavors).flatMap(q => Object.values(q)));
+            card.innerHTML = `
+              <div class="card-img"><img src="${cfg.image}" alt="${cfg.title}" loading="lazy"></div>
+              <div class="card-body">
+                <h3 class="product-title">${cfg.title}</h3>
+                <div class="price-line">A partir de <strong>${moneyBR(minPrice)}</strong></div>
+              </div>
+            `;
+            card.onclick = () => openProductModal(key);
+            elements.menuStack.appendChild(card);
+        });
+    }
+
+    function renderCart() {
+        const subtotal = cart.reduce((sum, item) => sum + (item.totalPrice * item.count), 0);
+        let discountAmount = 0;
+        
+        if (appliedCoupon) {
+            if (appliedCoupon.type === 'percentage') {
+                discountAmount = subtotal * (appliedCoupon.value / 100);
+            } else if (appliedCoupon.type === 'delivery') {
+                discountAmount = deliveryFee > 0 ? deliveryFee : 0;
             }
         }
         
-        const subtotal = cart.reduce((sum, item) => sum + (item.totalPrice * item.count), 0);
-        let discountAmount = 0;
-        if(appliedCoupon) {
-            if (appliedCoupon.type === 'percentage') discountAmount = subtotal * (appliedCoupon.value / 100);
-            else if (appliedCoupon.type === 'delivery') discountAmount = deliveryFee > 0 ? deliveryFee : 0;
-        }
         const finalDeliveryFee = (appliedCoupon && appliedCoupon.type === 'delivery') ? 0 : deliveryFee;
         const grandTotal = Math.max(0, subtotal + finalDeliveryFee - discountAmount);
         
-        let lines = ['🥰 Oiii, gostaria de fazer um pedido!', 'Pode confirmar pra mim, por favor? 👇', ''];
-        lines.push(`🌸 *Pedido para:* ${nome}`, '', `*Itens:*`);
-        cart.forEach((it,i)=>{
-            const tema = it.tema ? ` • Tema: ${it.tema}` : "";
-            let modsText = '';
-            if(it.mods && it.mods.length > 0) {
-                modsText = it.mods.map(m => `\n  - Adicional: ${m.label.split('+')[0].trim()}`).join('');
-            }
-            let optionsText = '';
-            if(it.options && it.options.length > 0) {
-                optionsText = ' • ' + it.options.map(o => `${o.label}: ${o.value}`).join(' • ');
-            }
-            lines.push(`*${i+1})* ${it.count}x *${it.title}* (${it.flavor}, ${it.pack} un)${optionsText}${tema}${modsText}`);
-        });
-        lines.push('');
-        lines.push(`📌 *Subtotal:* ${moneyBR(subtotal)}`);
-        if(appliedCoupon && discountAmount > 0){
-            lines.push(`🎟️ *Desconto (${appliedCoupon.code}):* -${moneyBR(discountAmount)}`);
-        }
-        if(mode === 'entrega'){
-          lines.push(`🛵 *Taxa de Entrega:* ${moneyBR(finalDeliveryFee)}`);
-          lines.push(`💰 *Total Geral:* ${moneyBR(grandTotal)}`);
-        }
-        lines.push('');
-        lines.push(`📅 *Data/Horário:* ${formatBR(chosenDateTime)} às ${timeValue}`);
-        if (mode === 'retirada') {
-            lines.push(`🚶‍♀️ *Modalidade:* Retirada no local.`);
-        } else {
-            const rua=document.getElementById('rua').value.trim();
-            const bairro=document.getElementById('bairro').value.trim();
-            const numero=document.getElementById('numero').value.trim();
-            const ref = document.getElementById('ref').value.trim();
-            lines.push(`🚚 *Modalidade:* Entrega.`);
-            lines.push(`🏡 *Endereço:* ${rua}, Nº ${numero}, Bairro ${bairro}.`);
-            if(ref) lines.push(`- Referência: ${ref}`);
-        }
-        const obs = document.getElementById('obs').value.trim();
-        if(obs) {
-            lines.push('');
-            lines.push(`📝 *Observações:* ${obs}`);
-        }
-        lines.push('','Aguardo sua confirmação para combinarmos o pagamento. Muito obrigado(a)! 💖');
-        const url = `https://wa.me/${PHONE}?text=${encodeURIComponent(lines.join('\n'))}`;
-        window.open(url, '_blank');
-    };
-}
+        elements.cartItems.innerHTML = cart.length === 0 ? '<p style="text-align:center;color:var(--ink);padding:20px;">Seu carrinho está vazio.</p>' : cart.map((it,idx) => {
+          const lineTotal = it.totalPrice * it.count;
+          const packUnits = parseInt(it.pack, 10);
+          const unitPrice = packUnits > 0 ? it.totalPrice / packUnits : it.totalPrice;
+          const optionsHTML = it.options && it.options.length > 0 ? `<div class="muted">${it.options.map(o => `${o.label}: <strong>${o.value}</strong>`).join(' • ')}</div>` : '';
+          const modsHTML = it.mods && it.mods.length > 0 ? `<div class="item-extras">${it.mods.map(m => `<div>+ ${m.label.split('+')[0].trim()}</div>`).join('')}</div>` : '';
+          
+          return `<div class="cart-item" data-identifier="${it.identifier}">
+            <div class="item-row">
+              <div class="item-info">
+                <h4>${it.title}</h4>
+                <div class="muted">Sabor: <strong>${it.flavor}</strong> • Quantidade: <strong>${it.pack} un</strong></div>
+                ${optionsHTML}
+                ${it.tema ? `<div class="muted">Tema: <strong>${it.tema}</strong></div>` : ''}
+                ${modsHTML}
+                <div class="muted">Total: <strong>${moneyBR(lineTotal)}</strong></div>
+              </div>
+              <div class="qty-col">
+                <div class="qty-ctl">
+                  <button data-action="dec" data-index="${idx}">−</button>
+                  <span><strong>${it.count}</strong></span>
+                  <button data-action="inc" data-index="${idx}">+</button>
+                </div>
+                <button class="rmv" data-action="rmv" data-index="${idx}">Remover</button>
+              </div>
+            </div>
+          </div>`;
+        }).join('');
 
-/* ====== 5. INICIALIZAÇÃO ====== */
-document.addEventListener('DOMContentLoaded', () => {
-    loadCart();
-    renderMenu();
-    setupFilters();
-    renderCart();
-    setupEventListeners();
-    document.getElementById('y').textContent=new Date().getFullYear();
-    const dateInput = document.getElementById('date');
-    const timeInput = document.getElementById('time');
-    const minDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    dateInput.min = toLocalInputValue(minDate);
-    dateInput.value = dateInput.min;
-    timeInput.value = `14:00`;
+        elements.subtotalValue.textContent = moneyBR(subtotal);
+        elements.grandTotalValue.textContent = moneyBR(grandTotal);
+        elements.deliveryFeeValue.textContent = deliveryFee > 0 ? moneyBR(deliveryFee) : 'A calcular';
+        
+        if(discountAmount > 0){
+            elements.discountValue.textContent = `-${moneyBR(discountAmount)}`;
+            elements.discountLine.style.display = 'flex';
+        } else {
+            elements.discountLine.style.display = 'none';
+        }
+        
+        const totalCount = cart.reduce((sum, i) => sum + i.count, 0);
+        elements.cartCount.textContent = totalCount;
+        elements.mobileSubtotal.textContent = `Total: ${moneyBR(grandTotal)}`;
+    }
+
+    function openProductModal(key) {
+        currentProductKey = key;
+        const cfg = MENU[key];
+        document.getElementById('modalImg').src = cfg.image;
+        document.getElementById('modalTitle').textContent = cfg.title;
+        document.getElementById('modalDesc').textContent = cfg.description;
+        
+        let formHTML = `<div class="option-group"><label>${cfg.extra === 'tema' ? 'Cobertura' : 'Sabor'}</label><select name="flavor" class="form-input">${Object.keys(cfg.flavors).map(f => `<option value="${f}">${f}</option>`).join('')}</select></div>`;
+        if(cfg.options){
+            cfg.options.forEach(opt => {
+                formHTML += `<div class="option-group"><label>${opt.label}</label><select name="${opt.key}" class="form-input">${opt.values.map(v => `<option value="${v}">${v}</option>`).join('')}</select></div>`;
+            });
+        }
+        formHTML += `<div class="option-group"><label>Quantidade</label><select name="qty" class="form-input">${cfg.quantities.map(q => `<option value="${q}">${q} unidades</option>`).join('')}</select></div>`;
+        if (cfg.extra === 'tema') { formHTML += `<div class="option-group"><label>Tema da festa (opcional)</label><input type="text" name="tema" class="form-input" placeholder="Ex: Unicórnio, Mickey..."></div>`; }
+        if (cfg.mods && cfg.mods.length > 0) { formHTML += `<div class="option-group"><label>Adicionais</label>${cfg.mods.map(m => `<div class="mod-line"><label><input type="checkbox" name="mods" value="${m.id}" data-price="${m.price}"> ${m.label}</label><strong>+ ${moneyBR(m.price)}</strong></div>`).join('')}</div>`; }
+        
+        const modalForm = document.getElementById('modalForm');
+        modalForm.innerHTML = formHTML;
+        
+        const updatePrice = () => {
+            if(!currentProductKey) return;
+            const cfg = MENU[currentProductKey];
+            const flavor = modalForm.querySelector('[name="flavor"]').value;
+            const qty = modalForm.querySelector('[name="qty"]').value;
+            let basePrice = cfg.flavors[flavor]?.[qty] || 0;
+            let modsPrice = 0;
+            modalForm.querySelectorAll('[name="mods"]:checked').forEach(mod => { modsPrice += parseFloat(mod.dataset.price); });
+            document.getElementById('modalPrice').textContent = moneyBR(basePrice + modsPrice);
+        };
+        modalForm.onchange = updatePrice;
+        
+        document.getElementById('modalAddToCartBtn').onclick = () => {
+            const selectedOptions = (cfg.options || []).map(opt => ({
+                key: opt.key,
+                label: opt.label,
+                value: modalForm.querySelector(`select[name="${opt.key}"]`).value
+            }));
+            const item = {
+                key: currentProductKey,
+                title: cfg.title,
+                flavor: modalForm.querySelector('[name="flavor"]').value,
+                pack: modalForm.querySelector('[name="qty"]').value,
+                price: cfg.flavors[modalForm.querySelector('[name="flavor"]').value]?.[modalForm.querySelector('[name="qty"]').value],
+                tema: modalForm.querySelector('[name="tema"]')?.value.trim() || undefined,
+                mods: Array.from(modalForm.querySelectorAll('[name="mods"]:checked')).map(mod => ({ id: mod.value, label: mod.parentElement.textContent.trim(), price: parseFloat(mod.dataset.price) })),
+                options: selectedOptions
+            };
+            if (!item.price) return showModal('Por favor, selecione as opções.');
+            
+            addToCart(item);
+
+            const btn = document.getElementById('modalAddToCartBtn');
+            btn.textContent = '✅ Adicionado';
+            btn.style.setProperty('--bg1', 'var(--green-300)');
+            btn.style.setProperty('--bg2', 'var(--green-500)');
+            btn.disabled = true;
+
+            setTimeout(() => {
+                closeModal();
+                setTimeout(() => {
+                    btn.textContent = 'Adicionar ao carrinho';
+                    btn.style.removeProperty('--bg1');
+                    btn.style.removeProperty('--bg2');
+                    btn.disabled = false;
+                }, 300);
+            }, 800);
+        };
+        updatePrice();
+        elements.productModal.classList.add('show');
+    }
+    
+    function closeModal() {
+        elements.modalBox.style.transform = 'translateY(100%)';
+        setTimeout(() => { elements.productModal.classList.remove('show'); elements.modalBox.style.transform = ''; }, 300);
+    }
+
+    function setupFilters() {
+        const filters = {
+            'Todos': () => true,
+            'Brigadeiros': key => ['tradicionais', 'gourmet', 'personalizados', 'colher'].includes(key),
+            'Brownies': key => ['lembrancinhas', 'minibrownie'].includes(key),
+            'Bolinhos': key => ['cupcake_tradicional', 'cupcake_recheado'].includes(key),
+            'Donuts': key => ['minidonuts'].includes(key),
+            'Copinhos': key => ['copo'].includes(key),
+        };
+
+        elements.chips.innerHTML = '';
+        Object.keys(filters).forEach((name, index) => {
+            const b = document.createElement('button');
+            b.textContent = name;
+            if (index === 0) b.classList.add('active');
+            b.dataset.filterName = name;
+            elements.chips.appendChild(b);
+        });
+
+        elements.chips.addEventListener('click', e => {
+            if (e.target.tagName === 'BUTTON') {
+                const filterName = e.target.dataset.filterName;
+                const filterFn = filters[filterName];
+                elements.chips.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+                e.target.classList.add('active');
+                elements.menuStack.querySelectorAll('.card').forEach(card => {
+                    card.style.display = filterFn(card.dataset.key) ? 'flex' : 'none';
+                });
+            }
+        });
+        
+        elements.searchInput.addEventListener('input', e => {
+            const query = e.target.value.toLowerCase();
+            elements.chips.querySelector('button').click(); 
+            elements.menuStack.querySelectorAll('.card').forEach(card => {
+                const cfg = MENU[card.dataset.key];
+                const searchText = `${cfg.title} ${cfg.description} ${Object.keys(cfg.flavors).join(' ')}`.toLowerCase();
+                card.style.display = searchText.includes(query) ? '' : 'none';
+            });
+        });
+    }
+
+    /* ====== 4. LÓGICA DE EVENTOS (CLICKS, ETC.) ====== */
+    function setupEventListeners(){
+        elements.alertCloseBtn.onclick = () => elements.alertModal.classList.remove('show');
+        elements.alertModal.onclick = (e) => { if (e.target === elements.alertModal) elements.alertModal.classList.remove('show'); };
+        
+        elements.openCartBtn.onclick = () => elements.drawer.classList.add('open');
+        elements.viewCartBtn.onclick = () => elements.drawer.classList.add('open');
+        elements.closeTopBtn.onclick = () => elements.drawer.classList.remove('open');
+        elements.continueBtn.onclick = () => elements.drawer.classList.remove('open');
+        elements.modalCloseBtn.onclick = closeModal;
+        
+        const dragArea = document.querySelector('#productModal .modal-drag-area');
+        let startY, isDragging = false; const dragThreshold = 80;
+        dragArea.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; isDragging = true; elements.modalBox.classList.add('is-dragging'); });
+        dragArea.addEventListener('touchmove', (e) => { if (!isDragging) return; const deltaY = e.touches[0].clientY - startY; if (deltaY > 0) { elements.modalBox.style.transform = `translateY(${deltaY}px)`; }});
+        dragArea.addEventListener('touchend', (e) => { if (!isDragging) return; isDragging = false; elements.modalBox.classList.remove('is-dragging'); if (e.changedTouches[0].clientY - startY > dragThreshold) { closeModal(); } else { elements.modalBox.style.transform = 'translateY(0)'; }});
+
+        elements.cartItems.addEventListener('click', e => {
+            const target = e.target.closest('[data-action]');
+            if(target) {
+                const index = parseInt(target.dataset.index);
+                const action = target.dataset.action;
+                if(action === 'inc') updateCartItemCount(index, 1);
+                if(action === 'dec') updateCartItemCount(index, -1);
+                if(action === 'rmv') updateCartItemCount(index, -cart[index].count);
+            }
+        });
+
+        document.querySelectorAll('.segmented button[data-mode]').forEach(b=>{
+            b.onclick=()=>{
+                const mode=b.dataset.mode;
+                document.querySelectorAll('.segmented button[data-mode]').forEach(x=>x.classList.toggle('active',x.dataset.mode === mode));
+                document.querySelectorAll('.delivery-box-container').forEach(box => {
+                    box.classList.toggle('visible', box.dataset.modeBox === mode);
+                });
+                elements.deliveryFeeLine.style.display = mode === 'entrega' ? 'flex' : 'none';
+                if (mode === 'retirada') {
+                    deliveryFee = 0;
+                    if (appliedCoupon && appliedCoupon.type === 'delivery') appliedCoupon = null;
+                    saveCart();
+                    renderCart();
+                }
+            }
+        });
+        
+        elements.cepInput.addEventListener('input',()=>{let v=onlyDigits(elements.cepInput.value).slice(0,8); if(v.length>5) v=v.slice(0,5)+'-'+v.slice(5); elements.cepInput.value=v;});
+        elements.cepInput.addEventListener('blur', async (e) => {
+            const cep = onlyDigits(e.target.value);
+            if (cep.length !== 8) return;
+            const cepSpinner = document.getElementById('cepSpinner');
+            cepSpinner.classList.add('loading');
+            try {
+                const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await res.json();
+                if (data.erro) { showModal('CEP não encontrado.'); }
+                else {
+                    document.getElementById('rua').value = data.logradouro;
+                    document.getElementById('bairro').value = data.bairro;
+                    document.getElementById('numero').focus();
+                }
+            } catch(err) { showModal('Erro ao buscar CEP.'); }
+            finally { cepSpinner.classList.remove('loading'); }
+        });
+        
+        elements.calculateFeeBtn.onclick = async () => {
+            const street = document.getElementById('rua').value.trim();
+            const number = document.getElementById('numero').value.trim();
+            const neighborhood = document.getElementById('bairro').value.trim();
+            if (!street || !number || !neighborhood) { return showModal('Preencha Rua, Número e Bairro para calcular.'); }
+
+            const btn = elements.calculateFeeBtn;
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.textContent = 'Calculando...';
+
+            try {
+                const response = await fetch('/api/calculate-delivery', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ street, number, neighborhood, cep: elements.cepInput.value.trim() })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Erro desconhecido');
+                
+                let preco = data.cost;
+                if(preco > 100) { preco = preco / 100; }
+                deliveryFee = preco;
+                saveCart();
+                showModal(`Frete calculado: ${moneyBR(deliveryFee)}`, '🚚');
+            } catch (error) {
+                showModal(`Não foi possível calcular o frete: ${error.message}`);
+                deliveryFee = 0;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+                renderCart();
+            }
+        };
+        
+        elements.applyCouponBtn.onclick = async () => {
+            const couponInput = document.getElementById('couponInput');
+            const couponMessageEl = document.getElementById('couponMessage');
+            const couponCode = couponInput.value.trim().toUpperCase();
+            if (!couponCode) return showModal('Digite um código de cupom.');
+
+            couponMessageEl.textContent = 'Verificando...';
+            couponMessageEl.className = '';
+            try {
+                const response = await fetch('/api/verify-coupon', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ couponCode })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || 'Erro');
+                
+                appliedCoupon = data.coupon;
+                couponMessageEl.classList.add('success');
+                couponMessageEl.textContent = 'Cupom aplicado! ✅';
+            } catch (error) {
+                appliedCoupon = null;
+                couponMessageEl.classList.add('error');
+                couponMessageEl.textContent = error.message;
+            }
+            saveCart();
+            renderCart();
+        };
+
+        elements.checkoutBtn.onclick = () => {
+            if(cart.length === 0) return showModal('Seu carrinho ainda está vazio, flor 🌸');
+            
+            const dateValue = elements.dateInput.value;
+            const timeValue = elements.timeInput.value;
+            if(!dateValue || !timeValue) return showModal('Selecione a data e o horário com carinho 💕');
+            const chosenDateTime = new Date(`${dateValue}T${timeValue}`);
+            if(chosenDateTime - new Date() < 24*60*60*1000 - 60000){
+                const m=new Date(Date.now()+24*60*60*1000);
+                return showModal(`Querida cliente 💕<br>Para garantirmos o frescor e capricho, precisamos de pelo menos 24h de antecedência.<br>Seu pedido pode ser feito a partir de <strong>${formatBR(m)} às ${pad2(m.getHours())}:${pad2(m.getMinutes())}</strong>.`);
+            }
+
+            const mode = document.querySelector('.segmented button.active').dataset.mode;
+            let nome;
+            if (mode === 'retirada') {
+                nome = document.getElementById('nomeRetirada').value.trim();
+                if(!nome) { return showModal('Informe o nome para retirada 🌸'); }
+            } else {
+                nome = document.getElementById('nomeEntrega').value.trim();
+                const rua=document.getElementById('rua').value.trim();
+                const bairro=document.getElementById('bairro').value.trim();
+                const numero=document.getElementById('numero').value.trim();
+                if(!nome || !rua || !bairro || !numero) { return showModal('Preencha nome e endereço completo para entrega 🌸'); }
+                if (deliveryFee <= 0 && (!appliedCoupon || appliedCoupon.type !== 'delivery')) {
+                    return showModal('Calcule a taxa de entrega antes de finalizar.');
+                }
+            }
+            
+            const subtotal = cart.reduce((sum, item) => sum + (item.totalPrice * item.count), 0);
+            let discountAmount = 0;
+            if(appliedCoupon) {
+                if (appliedCoupon.type === 'percentage') discountAmount = subtotal * (appliedCoupon.value / 100);
+                else if (appliedCoupon.type === 'delivery') discountAmount = deliveryFee > 0 ? deliveryFee : 0;
+            }
+            const finalDeliveryFee = (appliedCoupon && appliedCoupon.type === 'delivery') ? 0 : deliveryFee;
+            const grandTotal = Math.max(0, subtotal + finalDeliveryFee - discountAmount);
+            
+            let lines = ['🥰 Oiii, gostaria de fazer um pedido!', 'Pode confirmar pra mim, por favor? 👇', ''];
+            lines.push(`🌸 *Pedido para:* ${nome}`, '', `*Itens:*`);
+            cart.forEach((it,i)=>{
+                const tema = it.tema ? ` • Tema: ${it.tema}` : "";
+                let modsText = '';
+                if(it.mods && it.mods.length > 0) {
+                    modsText = it.mods.map(m => `\n  - Adicional: ${m.label.split('+')[0].trim()}`).join('');
+                }
+                let optionsText = '';
+                if(it.options && it.options.length > 0) {
+                    optionsText = ' • ' + it.options.map(o => `${o.label}: ${o.value}`).join(' • ');
+                }
+                lines.push(`*${i+1})* ${it.count}x *${it.title}* (${it.flavor}, ${it.pack} un)${optionsText}${tema}${modsText}`);
+            });
+            lines.push('');
+            lines.push(`📌 *Subtotal:* ${moneyBR(subtotal)}`);
+            if(appliedCoupon && discountAmount > 0){
+                lines.push(`🎟️ *Desconto (${appliedCoupon.code}):* -${moneyBR(discountAmount)}`);
+            }
+            if(mode === 'entrega'){
+              lines.push(`🛵 *Taxa de Entrega:* ${moneyBR(finalDeliveryFee)}`);
+              lines.push(`💰 *Total Geral:* ${moneyBR(grandTotal)}`);
+            }
+            lines.push('');
+            lines.push(`📅 *Data/Horário:* ${formatBR(chosenDateTime)} às ${timeValue}`);
+            if (mode === 'retirada') {
+                lines.push(`🚶‍♀️ *Modalidade:* Retirada no local.`);
+            } else {
+                const rua=document.getElementById('rua').value.trim();
+                const bairro=document.getElementById('bairro').value.trim();
+                const numero=document.getElementById('numero').value.trim();
+                const ref = document.getElementById('ref').value.trim();
+                lines.push(`🚚 *Modalidade:* Entrega.`);
+                lines.push(`🏡 *Endereço:* ${rua}, Nº ${numero}, Bairro ${bairro}.`);
+                if(ref) lines.push(`- Referência: ${ref}`);
+            }
+            const obs = document.getElementById('obs').value.trim();
+            if(obs) {
+                lines.push('');
+                lines.push(`📝 *Observações:* ${obs}`);
+            }
+            lines.push('','Aguardo sua confirmação para combinarmos o pagamento. Muito obrigado(a)! 💖');
+            const url = `https://wa.me/${PHONE}?text=${encodeURIComponent(lines.join('\n'))}`;
+            window.open(url, '_blank');
+        };
+    }
+
+    /* ====== 5. INICIALIZAÇÃO ====== */
+    function init() {
+        loadCart();
+        renderMenu();
+        setupFilters();
+        renderCart();
+        setupEventListeners();
+        document.getElementById('y').textContent=new Date().getFullYear();
+        
+        const minDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        elements.dateInput.min = toLocalInputValue(minDate);
+        elements.dateInput.value = toLocalInputValue(minDate);
+        elements.timeInput.value = `14:00`;
+    }
+
+    init(); // Executa a função de inicialização
 });
 </script>
 </body>
