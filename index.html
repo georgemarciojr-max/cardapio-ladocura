@@ -15,55 +15,34 @@
 
     <!-- COLOQUE AQUI O RESTANTE DO CONTEÚDO DO SEU SITE (produtos, etc.) -->
     <!-- ... -->
-    <!-- ... -->
-
 
     <!-- SEÇÃO DO CARRINHO DE COMPRAS (Exemplo) -->
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
             <h1 class="text-2xl font-bold mb-4 text-center text-gray-800">Seu Carrinho</h1>
-
-            <!-- Detalhes do Pedido -->
             <div class="space-y-2 mb-4">
-                <div class="flex justify-between">
-                    <span>Data:</span>
-                    <span>30/09/2025</span>
-                </div>
-                <div class="flex justify-between">
-                    <span>Horário:</span>
-                    <span>14:00</span>
-                </div>
+                <div class="flex justify-between"><span>Data:</span><span>30/09/2025</span></div>
+                <div class="flex justify-between"><span>Horário:</span><span>14:00</span></div>
             </div>
-
             <div class="border-t pt-4">
                 <div class="flex justify-between font-bold text-lg text-gray-900">
-                    <span>Total a Pagar</span>
-                    <span id="total-value">R$ 52,50</span>
+                    <span>Total a Pagar</span><span id="total-value">R$ 52,50</span>
                 </div>
             </div>
-
             <h2 class="text-lg font-semibold mt-6 mb-3">Forma de Pagamento</h2>
-            
-            <!-- Botão WhatsApp (mantém a função antiga) -->
             <button onclick="sendWhatsAppOrder()" class="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition-all flex items-center justify-center mb-3">
                 Pagar na Entrega (WhatsApp)
             </button>
-            
-            <!-- Botão PagBank (com a nova função) -->
             <button id="pagbank-button" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all flex items-center justify-center shadow-md">
                 <span id="button-text">Pagar Online com PagBank</span>
                 <div id="loading-spinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin ml-3"></div>
             </button>
-            
+            <!-- O P-TAG ABAIXO AGORA MOSTRARÁ O ERRO DETALHADO -->
             <p id="error-message" class="text-red-500 text-center mt-4 hidden"></p>
         </div>
     </div>
 
-
     <script>
-        // ==========================================================
-        // SCRIPT NOVO E CORRETO PARA O PAGBANK
-        // ==========================================================
         const pagbankButton = document.getElementById('pagbank-button');
         const buttonText = document.getElementById('button-text');
         const loadingSpinner = document.getElementById('loading-spinner');
@@ -71,57 +50,54 @@
 
         pagbankButton.addEventListener('click', async () => {
             pagbankButton.disabled = true;
-            buttonText.textContent = 'Gerando link seguro...';
+            buttonText.textContent = 'Gerando link...';
             loadingSpinner.classList.remove('hidden');
             errorMessage.classList.add('hidden');
 
-            // Pega o valor total do HTML. Ex: "R$ 52,50" -> 5250
             const totalString = document.getElementById('total-value').innerText;
             const totalValueInCents = parseInt(totalString.replace('R$', '').replace(',', '').replace('.', '').trim());
 
             try {
-                // 1. CHAMA O BACKEND SEGURO DO NETLIFY
                 const response = await fetch('/.netlify/functions/create-payment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ totalValue: totalValueInCents }) 
                 });
+                
                 const data = await response.json();
 
-                // 2. SE TUDO DEU CERTO, REDIRECIONA PARA O PAGBANK
                 if (response.ok && data.paymentLink) {
                     window.location.href = data.paymentLink;
                 } else {
+                    // Se a resposta não for OK, lança um erro com a mensagem específica vinda do backend
                     throw new Error(data.error || "Não foi possível gerar o link de pagamento.");
                 }
+
             } catch (error) {
-                // 3. SE DEU ERRO, MOSTRA UMA MENSAGEM
-                console.error("Erro ao chamar a função Netlify:", error);
+                console.error("Erro detalhado:", error);
                 buttonText.textContent = 'Pagar Online com PagBank';
-                errorMessage.textContent = 'Ops! Houve um erro. Tente novamente.';
+                
+                // ==========================================================
+                // MUDANÇA IMPORTANTE AQUI
+                // Em vez de uma mensagem genérica, agora ele mostra o erro real.
+                // ==========================================================
+                errorMessage.textContent = error.message; 
                 errorMessage.classList.remove('hidden');
+                
                 pagbankButton.disabled = false;
                 loadingSpinner.classList.add('hidden');
             }
         });
 
-
-        // ==========================================================
-        // MANTENHA AQUI SUA FUNÇÃO ANTIGA PARA O WHATSAPP
-        // ==========================================================
         function sendWhatsAppOrder() {
-            // Coloque aqui a sua lógica para enviar o pedido para o WhatsApp
-            console.log('Botão do WhatsApp clicado. Redirecionando...');
-            const phoneNumber = "556992702283"; // Seu número
+            console.log('Botão do WhatsApp clicado.');
+            const phoneNumber = "556992702283";
             const message = "Olá, gostaria de fazer um pedido para pagar na entrega!";
             const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
             window.location.href = whatsappUrl;
         }
-
     </script>
 </body>
 </html>
-
-
 
 
