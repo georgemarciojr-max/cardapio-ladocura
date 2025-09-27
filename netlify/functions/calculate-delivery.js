@@ -1,64 +1,66 @@
-// Função de backend final para o projeto La Doçura
+const fetch = require('node-fetch');
 
-exports.handler = async function(event) {
+exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
-        return { statusCode: 405, body: 'Method Not Allowed' };
-    }
-
-    const { street, number, neighborhood, cep } = JSON.parse(event.body);
-    const clientId = process.env.JUMA_CLIENT_ID;
-    const clientSecret = process.env.JUMA_SECRET;
-
-    if (!clientId || !clientSecret) {
-        return { statusCode: 500, body: JSON.stringify({ error: "Credenciais do servidor não configuradas." }) };
+        return { statusCode: 405, body: JSON.stringify({ error: 'Método não permitido.' }) };
     }
 
     try {
-        const tokenResponse = await fetch('https://api.dev.jumaentregas.com.br/auth/token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ "clientid": clientId, "secret": clientSecret })
-        });
-        const tokenData = await tokenResponse.json();
-        if (!tokenResponse.ok) throw new Error('Falha na autenticação com a Juma.');
-        const accessToken = tokenData.token;
-        
-        const requestBody = {
-            "drivercategory": 3, // Categoria Padrão (Moto com bag)
-            "address": {
-                "street": street,
-                "number": number,
-                "neighborhood": neighborhood,
-                "city": "Porto Velho",
-                "state": "RO"
-            },
-            "latitude": 0,
-            "longitude": 0,
-            "return": false
-        };
-        
-        const freteResponse = await fetch('https://api.dev.jumaentregas.com.br/destinations', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-            body: JSON.stringify(requestBody)
-        });
-
-        const freteData = await freteResponse.json();
-
-        if (!freteResponse.ok) {
-            const errorMessage = freteData.message || 'Erro da API Juma.';
-            throw new Error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
+        const { totalValue } = JSON.parse(event.body);
+        if (!totalValue || typeof totalValue !== 'number' || totalValue <= 0) {
+            return { statusCode: 400, body: JSON.stringify({ error: "Valor total inválido." }) };
         }
-        
-        return {
-            statusCode: 200,
-            body: JSON.stringify(freteData) // Retorna o objeto completo com { cost: VALOR }
+
+        const PAGBANK_TOKEN = process.env.PAGBANK_TOKEN;
+        if (!PAGBANK_TOKEN) {
+            console.error("ERRO GRAVE: A variável PAGBANK_TOKEN não foi encontrada nas configurações do Netlify.");
+            return { statusCode: 500, body: JSON.stringify({ error: "Token do PagBank não configurado no servidor." }) };
+        }
+
+        const url = 'https://api.pagseguro.com/orders';
+        const body = {
+            customer: { name: "Cliente Cardapio", email: "cliente@email.com", tax_id: "12345678901" },
+            items: [{ name: "Pedido do Cardápio", quantity: 1, unit_amount: totalValue }],
+            qr_codes: [{ amount: { value: totalValue } }],
+            notification_urls: ["https://seusite.com/notificacoes"]
         };
+
+        const pagbankResponse = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${PAGBANK_TOKEN}`,
+            },
+            body: JSON.stringify(body),
+        });
+
+        // =========================================================================
+        // MUDANÇA CRÍTICA AQUI: AGORA VAMOS LOGAR A RESPOSTA COMPLETA DO PAGBANK
+        // =========================================================================
+        const responseData = await pagbankResponse.json();
+
+        if (!pagbankResponse.ok) {
+            // Log detalhado para nós vermos no Netlify
+            console.error("O PagBank retornou um erro. Status:", pagbankResponse.status);
+            console.error("Resposta completa do PagBank:", JSON.stringify(responseData, null, 2));
+            
+            // Mensagem de erro para o usuário
+            const userErrorMessage = responseData.error_messages ? responseData.error_messages[0].description : "O PagBank recusou a transação.";
+            return { statusCode: 400, body: JSON.stringify({ error: userErrorMessage }) };
+        }
+
+        const paymentLink = responseData.qr_codes[0].links.find(link => link.rel === 'PAY').href;
+        if (!paymentLink) {
+            console.error("Sucesso na chamada, mas o link de pagamento não foi encontrado na resposta.");
+            return { statusCode: 500, body: JSON.stringify({ error: "Link de pagamento não encontrado na resposta." }) };
+        }
+
+        return { statusCode: 200, body: JSON.stringify({ paymentLink }) };
 
     } catch (error) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: error.message })
-        };
+        console.error('Erro inesperado na execução da função:', error);
+        return { statusCode: 500, body: JSON.stringify({ error: 'Erro interno no servidor. Verifique os logs.' }) };
     }
 };
+
+
