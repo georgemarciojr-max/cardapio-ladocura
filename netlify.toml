@@ -1,7 +1,8 @@
+# Diz ao Netlify onde está a sua função de backend
 [functions]
-  directory = "netlify/functions"
+  directory = "netlify/functions/"
 
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
+# Diz ao Netlify para instalar as dependências necessárias
+[build]
+  command = "npm install"
+  functions = "netlify/functions"
