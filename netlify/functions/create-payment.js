@@ -1,36 +1,60 @@
 const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
-    const PAGBANK_TOKEN = process.env.PAGBANK_TOKEN;
-
-    if (!PAGBANK_TOKEN) {
-        return { statusCode: 500, body: JSON.stringify({ error: 'Token do PagBank não configurado.' }) };
+    if (event.httpMethod !== 'POST') {
+        return { statusCode: 405, body: JSON.stringify({ error: 'Método não permitido.' }) };
     }
 
-    const { totalValue } = JSON.parse(event.body);
-
-    const orderData = {
-        "items": [{ "name": "Pedido do Site", "quantity": 1, "unit_amount": totalValue }],
-        "qr_codes": [{ "amount": { "value": totalValue } }],
-        // IMPORTANTE: Altere para a URL de sucesso do SEU site
-        "notification_urls": ["https://SEU-SITE.netlify.app/sucesso.html"] 
-    };
-
     try {
-        const response = await fetch('https://api.pagseguro.com/orders', {
+        const { totalValue } = JSON.parse(event.body);
+        if (!totalValue || typeof totalValue !== 'number' || totalValue <= 0) {
+            return { statusCode: 400, body: JSON.stringify({ error: "Valor total inválido." }) };
+        }
+
+        const PAGBANK_TOKEN = process.env.PAGBANK_TOKEN;
+        if (!PAGBANK_TOKEN) {
+            console.error("ERRO GRAVE: A variável PAGBANK_TOKEN não foi encontrada nas configurações do Netlify.");
+            return { statusCode: 500, body: JSON.stringify({ error: "Token do PagBank não configurado no servidor." }) };
+        }
+
+        const url = 'https://api.pagseguro.com/orders';
+        const body = {
+            customer: { name: "Cliente Cardapio", email: "cliente@email.com", tax_id: "12345678901" },
+            items: [{ name: "Pedido do Cardápio", quantity: 1, unit_amount: totalValue }],
+            qr_codes: [{ amount: { value: totalValue } }],
+            notification_urls: ["https://seusite.com/notificacoes"]
+        };
+
+        const pagbankResponse = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${PAGBANK_TOKEN}` },
-            body: JSON.stringify(orderData)
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${PAGBANK_TOKEN}`,
+            },
+            body: JSON.stringify(body),
         });
-        const data = await response.json();
-        if (!response.ok) { throw new Error('Falha ao criar pedido no PagBank.'); }
-        
-        const paymentLink = data.qr_codes[0].links.find(link => link.rel === 'PAY').href;
-        return { statusCode: 200, body: JSON.stringify({ paymentLink: paymentLink }) };
+
+        const responseData = await pagbankResponse.json();
+
+        if (!pagbankResponse.ok) {
+            console.error("O PagBank retornou um erro. Status:", pagbankResponse.status);
+            console.error("Resposta completa do PagBank:", JSON.stringify(responseData, null, 2));
+            
+            const userErrorMessage = responseData.error_messages ? responseData.error_messages[0].description : "O PagBank recusou a transação.";
+            return { statusCode: 400, body: JSON.stringify({ error: userErrorMessage }) };
+        }
+
+        const paymentLink = responseData.qr_codes[0].links.find(link => link.rel === 'PAY').href;
+        if (!paymentLink) {
+            console.error("Sucesso na chamada, mas o link de pagamento não foi encontrado na resposta.");
+            return { statusCode: 500, body: JSON.stringify({ error: "Link de pagamento não encontrado na resposta." }) };
+        }
+
+        return { statusCode: 200, body: JSON.stringify({ paymentLink }) };
 
     } catch (error) {
-        console.error("Erro na função:", error);
-        return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
+        console.error('Erro inesperado na execução da função:', error);
+        return { statusCode: 500, body: JSON.stringify({ error: 'Erro interno no servidor. Verifique os logs.' }) };
     }
 };
 
